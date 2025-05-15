@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { JSX, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CityCard from '../components/CityCard';
-import TripHeader from '../components/TripHeader.tsx';
-import WeatherMapToggle from '../components/WeatherMapToggle.tsx';
+import TripHeader from '../components/TripHeader';
+import WeatherMapToggle from '../components/WeatherMapToggle'; //TODO: Fix import path
 
 interface City {
   id: number;
