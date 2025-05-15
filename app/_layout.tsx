@@ -1,11 +1,11 @@
 import { useRouter } from "expo-router";
-import MapPage from "./MapPage";
+import SettingsPage from "./SettingsPage";
 
 export default function RootLayout() {
   const router = useRouter();
   return (
     <div>
-      <MapPage />
+      <SettingsPage />
       {/* <Button onPress={() => router.navigate("/MapPage")}>Maps</Button> */}
     </div>
   );
