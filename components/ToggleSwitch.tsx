@@ -1,9 +1,9 @@
+import { Colors } from "@/constants/Colors";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-
 const styles = StyleSheet.create({
   activeButton: { backgroundColor: "#012" },
-  activeText: { color: "#FFF" },
+  activeText: { color: Colors.dark.text },
   settingContainer: {
     padding: 16,
     flexDirection: "row",
