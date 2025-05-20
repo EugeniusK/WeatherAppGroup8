@@ -1,6 +1,6 @@
 
 import React, { JSX, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CityCard from '../components/CityCard';
 import TripHeader from '../components/TripHeader';
@@ -31,7 +31,10 @@ const HomeScreen = (): JSX.Element => {
           <Ionicons name="checkmark" size={40} color="white" />
         </View>
         <View style={styles.carIcon}>
-          {/* You would use an actual car image here */}
+            <Image
+            source={require('./assets/car.png')}
+            style={styles.localImage}
+            />
           <View style={styles.car}></View>
         </View>
         <View style={styles.editButtons}>
@@ -111,6 +114,11 @@ const styles = StyleSheet.create({
   },
   citiesList: {
     flex: 1,
+  },
+  localImage: {
+    width: 100,
+    height: 50,
+    resizeMode: 'contain',
   },
 });
 

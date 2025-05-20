@@ -9,9 +9,7 @@ interface TripHeaderProps {
 const TripHeader: React.FC<TripHeaderProps> = ({ onEdit }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-    
-      </View>
+
       <TouchableOpacity style={styles.editButton} onPress={onEdit}>
         <Text style={styles.editText}>edit cities / dates</Text>
       </TouchableOpacity>
