@@ -1,16 +1,243 @@
-import React from "react";
-import { Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { Calendar } from "react-native-calendars";
+
+const locationSuggestions = [
+  "Cambridge, England",
+  "Canterbury, England",
+  "Camberley, England",
+  "Camden, England",
+];
 
 export default function SearchPage() {
+  // set usestates
+  // const[variable, function to increment variable] = useState(initial value of variable)
+  const [searchText, setSearchText] = useState("");
+  const [filteredLocations, setFilteredLocations] = useState(locationSuggestions);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [calendarVisible, setCalendarVisible] = useState(false);
+
+  // search function, filters list of locations by matching prefix with user input
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    setFilteredLocations(
+      locationSuggestions.filter((loc) =>
+        loc.toLowerCase().startsWith(text.toLowerCase())
+      )
+    );
+  };
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+    <View style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton}>
+        <Ionicons name="arrow-back" size={28} color="white" />
+      </TouchableOpacity>
+
+      {/* Search Input */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search location"
+          placeholderTextColor="#999"
+          value={searchText}
+          onChangeText={handleSearch}
+        />
+        <Ionicons name="search" size={20} color="#444" style={styles.searchIcon} />
+      </View>
+
+      {/* Location Suggestions */}
+      <FlatList
+        data={filteredLocations}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.locationItem}
+            onPress={() => setSelectedLocation(item)}
+          >
+            <Ionicons name="location" size={20} color="red" style={styles.icon} />
+            <Text style={styles.locationText}>{item}</Text>
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={<Text style={styles.noResults}>No results found</Text>}
+      />
+
+      {/* Selected Information */}
+      {selectedLocation ? (
+        <View style={styles.selectionDisplay}>
+          <Text style={styles.selectionLabel}>Location:</Text>
+          <Text style={styles.selectionValue}>{selectedLocation}</Text>
+        </View>
+      ) : null}
+
+      {selectedDate ? (
+        <View style={styles.selectionDisplay}>
+          <Text style={styles.selectionLabel}>Date:</Text>
+          <Text style={styles.selectionValue}>{selectedDate}</Text>
+        </View>
+      ) : null}
+
+      {/* Date Picker Button */}
+      <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
+        <Text style={styles.dateButtonText}>Select Date</Text>
+      </TouchableOpacity>
+
+      {/* Calendar Modal */}
+      <Modal visible={calendarVisible} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.calendarWrapper}>
+            <Calendar
+              onDayPress={(day) => {
+                setSelectedDate(day.dateString);
+                setCalendarVisible(false);
+              }}
+              markedDates={{
+                [selectedDate]: { selected: true, marked: true, selectedColor: "white" },
+              }}
+              theme={{
+                calendarBackground: "#0033cc",
+                dayTextColor: "white",
+                monthTextColor: "white",
+                arrowColor: "white",
+                textSectionTitleColor: "white",
+                todayTextColor: "lightblue",
+                selectedDayTextColor: "black",
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confirm Button */}
+      <TouchableOpacity
+  style={styles.confirmButton}
+  onPress={() => {
+    if (selectedLocation && selectedDate) {
+      navigation.navigate("MapPage", {
+        location: selectedLocation,
+        date: selectedDate,
+      });
+    } else {
+      alert("Please select both a location and a date.");
+    }
+  }}
+>
+  <Text style={styles.confirmText}>Confirm</Text>
+</TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f3f3f3",
+  },
+  backButton: {
+    backgroundColor: "#3366FF",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50,
+    marginBottom: 16,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fefae0",
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    marginBottom: 12,
+    height: 50,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
+  },
+  searchIcon: {
+    marginLeft: 8,
+  },
+  locationItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff6e5",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    marginBottom: 8,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  locationText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  noResults: {
+    textAlign: "center",
+    marginTop: 10,
+    color: "#888",
+  },
+  dateButton: {
+    marginTop: 16,
+    backgroundColor: "#0044cc",
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: "center",
+  },
+  dateButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  calendarWrapper: {
+    backgroundColor: "#0033cc",
+    borderRadius: 16,
+    padding: 10,
+    overflow: "hidden",
+  },
+  selectionDisplay: {
+    marginTop: 10,
+    backgroundColor: "#ffffff",
+    padding: 12,
+    borderRadius: 12,
+  },
+  selectionLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#555",
+  },
+  selectionValue: {
+    fontSize: 16,
+    color: "#222",
+  },
+  confirmButton: {
+    marginTop: 24,
+    backgroundColor: "#3366FF",
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: "center",
+  },
+  confirmText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+});
