@@ -24,7 +24,7 @@ const HomeScreen = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      <TripHeader onEdit={() => console.log('Edit cities/dates pressed')} />
+     {/* <TripHeader onEdit={() => console.log('Edit cities/dates pressed')} />  */}
       
       <View style={styles.carIconContainer}>
         <View style={styles.checkCircle}>
