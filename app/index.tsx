@@ -31,11 +31,13 @@ const HomeScreen = (): JSX.Element => {
           <Ionicons name="checkmark" size={40} color="white" />
         </View>
         <View style={styles.carIcon}>
-            <Image
+
+          <View style={styles.car}>
+          <Image
             source={require('../assets/images/car.png')}
             style={styles.localImage}
             />
-          <View style={styles.car}></View>
+          </View>
         </View>
         <View style={styles.editButtons}>
           <TouchableOpacity style={styles.circleButton}>
@@ -75,24 +77,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20,
     position: 'relative',
+    elevation: 5, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    backgroundColor: 'transparent',
+    padding: 8,
+    borderRadius: 8,
   },
   checkCircle: {
     position: 'absolute',
     left: 30,
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: '#8CD867', // Green color from design
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 2,
   },
   carIcon: {
-    width: 200,
-    height: 100,
-    backgroundColor: '#5571D1', // Blue color from design
-    borderRadius: 20,
-    marginLeft: 40,
+    // Increased size with fixed dimensions
+    width: 150,       // Larger fixed width in pixels
+    height: 75,      // Larger fixed height in pixels
+    resizeMode: 'contain', // This ensures the image maintains its aspect ratio
+    // If you need to position it
+    marginLeft: 10,
   },
   car: {
     // Simplified car representation - would be an actual image

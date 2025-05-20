@@ -11,6 +11,7 @@ const WeatherMapToggle = () => {
         </View>
         <View style={styles.mapIcon}>
           <Ionicons name="map-outline" size={24} color="white" />
+          
         </View>
       </TouchableOpacity>
     </View>
