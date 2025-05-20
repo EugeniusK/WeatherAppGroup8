@@ -1,6 +1,8 @@
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
 import ToggleGroup from "@/components/ToggleSwitch";
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 export default function SettingsPage() {
   const [unit, setUnit] = useState("Celcius");
@@ -10,7 +12,7 @@ export default function SettingsPage() {
 
   const styles = StyleSheet.create({
     headerContainer: {
-      height: 50,
+      height: 100,
       padding: 16,
       flexDirection: "row",
     },
@@ -31,15 +33,15 @@ export default function SettingsPage() {
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        <View style={styles.headerContainer}>
+        <ThemedView type="background" style={styles.headerContainer}>
           <View style={styles.backContainer}>
-            <Text>Setting</Text>
+            <ThemedText type="title">test</ThemedText>
           </View>
           <View style={styles.titleContainer}>
-            <Text>Setting</Text>
+            <ThemedText type="title">Setting</ThemedText>
           </View>
-        </View>
-        <View style={styles.settingsContainer}>
+        </ThemedView>
+        <ThemedView type="foreground" style={styles.settingsContainer}>
           <ToggleGroup
             label="Units"
             selected={unit}
@@ -67,7 +69,7 @@ export default function SettingsPage() {
             options={["Enabled", "Disabled"]}
             onChange={setOffineAccess}
           ></ToggleGroup>
-        </View>
+        </ThemedView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
