@@ -39,7 +39,14 @@ const styles = StyleSheet.create({
     color: "000",
   },
 });
-const ToggleSwitch = ({ label, selected, options, onChange }) => (
+interface ToggleSwitchProps {
+  label: string;
+  selected: string;
+  options: string[];
+  onChange: (option: string) => void;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, selected, options, onChange }) => (
   <View style={styles.settingContainer}>
     <View style={styles.textContainer}>
       <Text style={styles.toggleButtonText}>{label}</Text>
