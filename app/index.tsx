@@ -32,7 +32,7 @@ const HomeScreen = (): JSX.Element => {
         </View>
         <View style={styles.carIcon}>
             <Image
-            source={require('../assets/car.png')}
+            source={require('../assets/images/car.png')}
             style={styles.localImage}
             />
           <View style={styles.car}></View>
