@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import MapPage from "./MapPage";
+import React from "react";
 
 export default function RootLayout() {
   const router = useRouter();
