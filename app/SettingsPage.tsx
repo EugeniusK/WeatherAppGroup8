@@ -28,12 +28,16 @@ export default function SettingsPage() {
     settingsContainer: {
       padding: 16,
     },
+
+    safe: {
+      color: "black",
+    },
   });
 
   return (
     <SafeAreaProvider>
       <SafeAreaView>
-        <ThemedView type="background" style={styles.headerContainer}>
+        <ThemedView type="foreground" style={styles.headerContainer}>
           <View style={styles.backContainer}>
             <ThemedText type="title">test</ThemedText>
           </View>
@@ -41,7 +45,7 @@ export default function SettingsPage() {
             <ThemedText type="title">Setting</ThemedText>
           </View>
         </ThemedView>
-        <ThemedView type="foreground" style={styles.settingsContainer}>
+        <ThemedView type="background" style={styles.settingsContainer}>
           <ToggleGroup
             label="Units"
             selected={unit}
