@@ -13,6 +13,8 @@ interface City {
   weather: string;
 }
 
+
+//example data -- get from json data file 
 const HomeScreen = (): JSX.Element => {
   const [cities, setCities] = useState<City[]>([
     { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },

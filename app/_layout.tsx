@@ -7,6 +7,7 @@ export default function RootLayout() {
   return (
     <div>
       <MapPage />
+      {/* Uncomment the following Button if you want to navigate to the MapPage in the future */}
       {/* <Button onPress={() => router.navigate("/MapPage")}>Maps</Button> */}
     </div>
   );
