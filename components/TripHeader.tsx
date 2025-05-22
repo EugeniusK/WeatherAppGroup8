@@ -9,10 +9,7 @@ interface TripHeaderProps {
 const TripHeader: React.FC<TripHeaderProps> = ({ onEdit }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Ionicons name="diamond" size={24} color="#6B46C1" />
-        <Text style={styles.titleText}>Home</Text>
-      </View>
+
       <TouchableOpacity style={styles.editButton} onPress={onEdit}>
         <Text style={styles.editText}>edit cities / dates</Text>
       </TouchableOpacity>

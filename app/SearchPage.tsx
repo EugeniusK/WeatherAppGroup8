@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import {View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, Modal,} from "react-native";
-import { Calendar } from "react-native-calendars";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { searchLocation } from "../utils/geolocation";
+import React, { useState } from "react";
+import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { Calendar } from "react-native-calendars";
+// import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router"; // for going back to previous page
+import { searchLocation } from "../utils/geolocation";
 let debounceTimer: NodeJS.Timeout; // for debouncing searching
 
 // previously for testing
