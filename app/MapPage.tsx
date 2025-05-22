@@ -49,8 +49,16 @@ export default function MapPage() {
   }
 
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
-  const {selectedLocation, selectedDate} = useLocalSearchParams();
+  const {selectedLocations, selectedDates} = useLocalSearchParams();
 
+  const allLocations = Array.isArray(selectedLocations) ? selectedLocations: selectedLocations ?.split(',') || [];
+  const allDates = Array.isArray(selectedDates) ? selectedDates: selectedDates?.split(',') || [];
+
+  // Create an array of { location, date } objects
+  const locationDatePairs = allLocations.map((loc, index) => ({
+    location: loc,
+    date: allDates[index]
+  }));
 
   useEffect(() => {
     async function loadFonts() {
@@ -69,12 +77,15 @@ export default function MapPage() {
       try {
         const newMarkers: WeatherMarker[] = []; // collect markers here
 
-        for (const place of locations) {
-          const locationData = await searchLocation(place); // Iterate through all locations and get relevant data (long, lat etc.)
+        for (const place of locationDatePairs) {
+          const locationData = await searchLocation(place.location); // Iterate through all locations and get relevant data (long, lat etc.)
           if (locationData.length > 0) {
 
             const marker = locationData[0];
-            const weatherData = await getHourlyWeatherForLocation(marker, new Date('2025-06-01'), new Date('2025-06-02'));
+            const startDate = new Date(place.date);
+            const endDate = new Date(startDate);               // Get the weather data for 1 day
+            endDate.setDate(startDate.getDate() + 1);
+            const weatherData = await getHourlyWeatherForLocation(marker, startDate, endDate);
 
             // Count frequency of weather conditions
             const conditionCounts: Record<string, number> = {};
