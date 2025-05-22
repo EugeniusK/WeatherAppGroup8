@@ -1,6 +1,6 @@
 
 import React, { JSX, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import CityCard from '../components/CityCard';
 import TripHeader from '../components/TripHeader';
@@ -13,6 +13,8 @@ interface City {
   weather: string;
 }
 
+
+//example data -- get from json data file 
 const HomeScreen = (): JSX.Element => {
   const [cities, setCities] = useState<City[]>([
     { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },
@@ -22,14 +24,17 @@ const HomeScreen = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      <TripHeader onEdit={() => console.log('Edit cities/dates pressed')} />
+     {/* <TripHeader onEdit={() => console.log('Edit cities/dates pressed')} />  */}
       
       <View style={styles.carIconContainer}>
         <View style={styles.checkCircle}>
           <Ionicons name="checkmark" size={40} color="white" />
         </View>
         <View style={styles.carIcon}>
-          {/* You would use an actual car image here */}
+            <Image
+            source={require('../assets/images/car.png')}
+            style={styles.localImage}
+            />
           <View style={styles.car}></View>
         </View>
         <View style={styles.editButtons}>
@@ -109,6 +114,11 @@ const styles = StyleSheet.create({
   },
   citiesList: {
     flex: 1,
+  },
+  localImage: {
+    width: 100,
+    height: 50,
+    resizeMode: 'contain',
   },
 });
 

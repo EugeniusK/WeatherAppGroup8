@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import { ThemedText } from "./ThemedText";
 const styles = StyleSheet.create({
   activeButton: { backgroundColor: "#012" },
   activeText: { color: Colors.dark.text },
@@ -12,19 +13,23 @@ const styles = StyleSheet.create({
     flex: 0.75,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: "#EEE",
+    // backgroundColor: "#EEE",
   },
   toggleContainer: {
     flex: 2,
     flexDirection: "row",
-    borderRadius: 14,
-    backgroundColor: "#bbb",
+    // borderRadius: 14,
+    // backgroundColor: "#bbb",
   },
   toggleButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     flex: 1,
     backgroundColor: "#ddd",
+    borderColor: "black",
+    borderTopWidth: 5,
+    borderBottomWidth: 5,
+    borderLeftWidth: 5,
   },
   toggleButtonLeft: {
     borderTopLeftRadius: 15,
@@ -33,16 +38,27 @@ const styles = StyleSheet.create({
   toggleButtonRight: {
     borderTopRightRadius: 15,
     borderBottomRightRadius: 15,
+    borderLeftWidth: 5,
+    borderRightWidth: 5,
   },
   toggleButtonText: {
     textAlign: "center",
     color: "000",
   },
 });
-const ToggleSwitch = ({ label, selected, options, onChange }) => (
+interface ToggleSwitchProps {
+  label: string;
+  selected: string;
+  options: string[];
+  onChange: (option: string) => void;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, selected, options, onChange }) => (
   <View style={styles.settingContainer}>
     <View style={styles.textContainer}>
-      <Text style={styles.toggleButtonText}>{label}</Text>
+      <ThemedText type="default" style={styles.toggleButtonText}>
+        {label}
+      </ThemedText>
     </View>
     <View style={styles.toggleContainer}>
       {options.map((option, index) => {
@@ -57,14 +73,15 @@ const ToggleSwitch = ({ label, selected, options, onChange }) => (
               onPress={() => onChange(option)}
               key={index}
             >
-              <Text
+              <ThemedText
+                type="default"
                 style={[
                   styles.toggleButtonText,
                   selected === option && styles.activeText,
                 ]}
               >
                 {option}
-              </Text>
+              </ThemedText>
             </Pressable>
           );
         } else if (index === options.length - 1) {
@@ -78,14 +95,15 @@ const ToggleSwitch = ({ label, selected, options, onChange }) => (
               onPress={() => onChange(option)}
               key={index}
             >
-              <Text
+              <ThemedText
+                type="default"
                 style={[
                   styles.toggleButtonText,
                   selected === option && styles.activeText,
                 ]}
               >
                 {option}
-              </Text>
+              </ThemedText>
             </Pressable>
           );
         } else {
@@ -98,14 +116,15 @@ const ToggleSwitch = ({ label, selected, options, onChange }) => (
               onPress={() => onChange(option)}
               key={index}
             >
-              <Text
+              <ThemedText
+                type="default"
                 style={[
                   styles.toggleButtonText,
                   selected === option && styles.activeText,
                 ]}
               >
                 {option}
-              </Text>
+              </ThemedText>
             </Pressable>
           );
         }
