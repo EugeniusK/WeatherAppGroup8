@@ -1,7 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+
+type RootStackParamList = {
+  Home: undefined;
+  Map: undefined;
+  Settings: undefined;
+  DestinationDetailsPage: { cityName: string };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface CityCardProps {
   cityName: string;
@@ -11,6 +22,7 @@ interface CityCardProps {
 }
 
 const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete }) => {
+  const navigation = useNavigation<NavigationProp>();
   const translateX = useRef(new Animated.Value(0)).current;
   const isOpen = useRef(false);
 
@@ -41,6 +53,12 @@ const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete }
     }
   };
 
+  const handlePress = () => {
+    if (!isOpen.current) {
+      navigation.navigate('DestinationDetailsPage', { cityName });
+    }
+  };
+
   return (
     <GestureHandlerRootView>
       <View style={styles.container}>
@@ -56,15 +74,17 @@ const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete }
           <Animated.View style={[styles.cardContent, {
             transform: [{ translateX }]
           }]}>
-            <View style={styles.weatherIcon}>
-              <Ionicons name="sunny-outline" size={24} color="black" />
-            </View>
-            <View style={styles.cityInfo}>
-              <Text style={styles.cityName}>{cityName}</Text>
-            </View>
-            <View style={styles.dateContainer}>
-              <Text style={styles.dateText}>{date}</Text>
-            </View>
+            <TouchableOpacity onPress={handlePress} style={styles.cardTouchable}>
+              <View style={styles.weatherIcon}>
+                <Ionicons name="sunny-outline" size={24} color="black" />
+              </View>
+              <View style={styles.cityInfo}>
+                <Text style={styles.cityName}>{cityName}</Text>
+              </View>
+              <View style={styles.dateContainer}>
+                <Text style={styles.dateText}>{date}</Text>
+              </View>
+            </TouchableOpacity>
           </Animated.View>
         </PanGestureHandler>
       </View>
@@ -126,6 +146,11 @@ const styles = StyleSheet.create({
   dateText: {
     color: 'white',
     fontWeight: '500',
+  },
+  cardTouchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
 });
 

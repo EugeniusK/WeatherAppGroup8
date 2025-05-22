@@ -61,7 +61,7 @@ class CustomLineChart extends LineChart {
   };
 }
 
-export default async function DestinationDetailsPage() {
+export default function DestinationDetailsPage() {
   const weatherData = [
     12.3, 11.5, 10.7, 10.3, 9.4, 9.4, 10.4, 11.1, 12.2, 12.6, 13.5, 13.7, 15.0,
     15.7, 15.4, 14.8,
@@ -221,7 +221,7 @@ export default async function DestinationDetailsPage() {
             chartConfig={{
               backgroundGradientFrom: "#fbfbfb",
               backgroundGradientTo: "#fbfbfb",
-              color: (opacity = 1) => "url(#grad)",
+              color: (opacity = 1) => `rgba(63, 0, 241, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             }}
             bezier
@@ -281,7 +281,7 @@ export default async function DestinationDetailsPage() {
             chartConfig={{
               backgroundGradientFrom: "#fbfbfb",
               backgroundGradientTo: "#fbfbfb",
-              color: (opacity = 1) => "url(#grad)",
+              color: (opacity = 1) => `rgba(63, 0, 241, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             }}
             bezier
