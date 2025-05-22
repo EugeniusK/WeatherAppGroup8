@@ -1,26 +1,77 @@
+import { getHourlyWeatherForLocation } from '@/utils/weather';
+import { Ionicons } from '@expo/vector-icons';
+import * as Font from 'expo-font';
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, Polyline } from "react-native-maps";
 import { LocationResult, searchLocation } from "../utils/geolocation";
 
-export default function MapPage() {
-  const [markers, setMarkers] = useState<LocationResult[]>([]);
-  const [loading, setLoading] = useState(true);
+interface WeatherMarker extends LocationResult {
+  iconName: string;
+}
 
-  const [locations, setLocations] = useState(["Cambridge", "London"]); // These are pre set locations, can be changed once the search is implemented
+export default function MapPage() {
+  const [markers, setMarkers] = useState<WeatherMarker[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  const conditionIconMap: Record<string, string> = {
+  "Cloudy": "cloudy",
+  "Sunny": "sunny",
+  "Rainy": "rainy",
+  "Partly Cloudy": "partly-sunny",
+  }
+
+  const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
+
 
   useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync(Ionicons.font); // Makes sure the ionics font is loaded so icons load
+      setFontsLoaded(true);
+    }
+    loadFonts();
+  }, []);
+
+
+  useEffect(() => {
+    if (!fontsLoaded) return;
+
     const fetchMarkers = async () => {
       setLoading(true);
       try {
-        const newMarkers: LocationResult[] = []; // collect markers here
+        const newMarkers: WeatherMarker[] = []; // collect markers here
 
         for (const place of locations) {
           const locationData = await searchLocation(place); // Iterate through all locations and get relevant data (long, lat etc.)
           if (locationData.length > 0) {
-            newMarkers.push(locationData[0]);
-          }
-        }
+
+            const marker = locationData[0];
+            const weatherData = await getHourlyWeatherForLocation(marker, new Date('2025-06-01'), new Date('2025-06-02'));
+
+            // Count frequency of weather conditions
+            const conditionCounts: Record<string, number> = {};
+            for (const hourly of weatherData) {
+              const desc = hourly.weatherCode.description;
+              conditionCounts[desc] = (conditionCounts[desc] || 0) + 1;
+            }
+
+            // Gets the weather condition which occurs the most
+            let maxKey = "";
+            let maxValue = -Infinity;
+            for (const [key, value] of Object.entries(conditionCounts)) {
+              if (value > maxValue) {
+                maxValue = value;
+                maxKey = key;
+              }
+            }
+            const iconName = conditionIconMap[maxKey];;
+            newMarkers.push({
+            ...marker,
+            iconName,
+          });
+      }
+    }
       setMarkers(newMarkers);
       setLoading(false); // Ensure that markers will be placed
       } catch (error) {
@@ -29,11 +80,12 @@ export default function MapPage() {
     };
 
     fetchMarkers();
-  }, [locations]); // When locations is updated, code is reran so markers can be updated
-  if (loading) {
-  return <View style={styles.container}><Text>Loading map...</Text></View>;
-}
+  }, [locations,fontsLoaded]); // When locations is updated, code is reran so markers can be updated
 
+  if (loading) {
+  return <View style={styles.container}><Text>Loading map and icons...</Text></View>;
+  }
+ 
   return (
     <View style={styles.container}>
       <MapView
@@ -53,10 +105,24 @@ export default function MapPage() {
           <Marker
             key={index}
             coordinate={{ latitude: lat, longitude: lon }}
-            title={marker.display_name}
-          />
+            title={marker.display_name}>
+
+          <View style={[{ alignItems: 'center' }, styles.yellowOuterCircle]}>
+          <Ionicons name={marker.iconName as any} size={24} color="white" />
+          </View>
+          </Marker>
         );
         })}
+        {markers.length > 1 && (
+          <Polyline
+            coordinates={markers.map(marker => ({
+              latitude: parseFloat(marker.lat),
+              longitude: parseFloat(marker.lon),
+            }))}
+            strokeColor="#0000FF"
+            strokeWidth={3}
+          />
+        )}
       </MapView>
     </View>
   );
@@ -70,5 +136,25 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  greenOuterCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: '#90EE90',
+    backgroundColor: '#90EE90',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  yellowOuterCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20, 
+    borderWidth: 3,
+    borderColor: '#D9D900',
+    backgroundColor: '#D9D900',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
