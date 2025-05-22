@@ -26,7 +26,7 @@ export default function SearchPage() {
   const [selectedDate, setSelectedDate] = useState("");
   const [calendarVisible, setCalendarVisible] = useState(false);
 
-  // search function, filters list of locations by matching prefix with user input
+  // search function, pass input string into function that implements API request
   const handleSearch = (text: string) => {
     setSearchText(text);
   
@@ -57,7 +57,7 @@ export default function SearchPage() {
           placeholder="Search location"
           placeholderTextColor="#999"
           value={searchText}
-          onChangeText={handleSearch}
+          onChangeText={handleSearch} // call the function handleSearch when input text changes
         />
         <Ionicons name="search" size={20} color="#444" style={styles.searchIcon} />
       </View>
@@ -129,9 +129,17 @@ export default function SearchPage() {
       style={styles.confirmButton}
       onPress={() => {
        if (selectedLocation && selectedDate) {
-         router.push("/"); // go back to Home Page
+        // both are of string data type
+        // console.log("Selected Location:", typeof selectedLocation);
+        // console.log("Selected Date:", typeof selectedDate);
+
+        router.navigate({
+          pathname: '/MapPage',
+          params: {location: typeof selectedLocation,
+                   date: typeof selectedDate}
+        }); // go back to Map Page
        } else {
-       alert("Please select both a location and a date.");
+        alert("Please select both a location and a date.");
        }
       }}
       >
@@ -145,10 +153,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f3f3f3",
+    backgroundColor: "#f1ebda",
   },
   backButton: {
-    backgroundColor: "#3366FF",
+    backgroundColor: "#4e70db",
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -160,7 +168,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fefae0",
+    backgroundColor: "#d9d9d9", 
     borderRadius: 16,
     paddingHorizontal: 12,
     marginBottom: 12,
@@ -182,7 +190,7 @@ const styles = StyleSheet.create({
   locationItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff6e5",
+    backgroundColor: "#f0ba42", 
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -190,10 +198,11 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
+    color: "#4e70db",
   },
   locationText: {
     fontSize: 16,
-    color: "#333",
+    color: "#222",
   },
   noResults: {
     textAlign: "center",
@@ -202,13 +211,13 @@ const styles = StyleSheet.create({
   },
   dateButton: {
     marginTop: 16,
-    backgroundColor: "#0044cc",
+    backgroundColor: "#f0ba42",
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
   },
   dateButtonText: {
-    color: "white",
+    color: "#222",
     fontWeight: "bold",
     fontSize: 16,
   },
@@ -219,7 +228,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   calendarWrapper: {
-    backgroundColor: "#0033cc",
+    backgroundColor: "#4e70db",
     borderRadius: 16,
     padding: 10,
     overflow: "hidden",
@@ -241,13 +250,14 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     marginTop: 24,
-    backgroundColor: "#3366FF",
+    backgroundColor: "#a0e778",
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
+    marginBottom: 30,
   },
   confirmText: {
-    color: "#fff",
+    color: "#222",
     fontWeight: "bold",
     fontSize: 16,
   },
