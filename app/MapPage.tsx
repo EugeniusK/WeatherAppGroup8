@@ -1,6 +1,7 @@
 import { getHourlyWeatherForLocation } from '@/utils/weather';
 import { Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
@@ -48,6 +49,7 @@ export default function MapPage() {
   }
 
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
+  const {selectedLocation, selectedDate} = useLocalSearchParams();
 
 
   useEffect(() => {

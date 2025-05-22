@@ -26,7 +26,7 @@ export default function SearchPage() {
   const [selectedDate, setSelectedDate] = useState("");
   const [calendarVisible, setCalendarVisible] = useState(false);
 
-  // search function, filters list of locations by matching prefix with user input
+  // search function, pass input string into function that implements API request
   const handleSearch = (text: string) => {
     setSearchText(text);
   
@@ -57,7 +57,7 @@ export default function SearchPage() {
           placeholder="Search location"
           placeholderTextColor="#999"
           value={searchText}
-          onChangeText={handleSearch}
+          onChangeText={handleSearch} // call the function handleSearch when input text changes
         />
         <Ionicons name="search" size={20} color="#444" style={styles.searchIcon} />
       </View>
