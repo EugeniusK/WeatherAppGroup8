@@ -129,9 +129,17 @@ export default function SearchPage() {
       style={styles.confirmButton}
       onPress={() => {
        if (selectedLocation && selectedDate) {
-         router.push("/"); // go back to Home Page
+        // both are of string data type
+        // console.log("Selected Location:", typeof selectedLocation);
+        // console.log("Selected Date:", typeof selectedDate);
+
+        router.navigate({
+          pathname: '/MapPage',
+          params: {location: typeof selectedLocation,
+                   date: typeof selectedDate}
+        }); // go back to Map Page
        } else {
-       alert("Please select both a location and a date.");
+        alert("Please select both a location and a date.");
        }
       }}
       >
@@ -245,6 +253,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
+    marginBottom: 30
   },
   confirmText: {
     color: "#fff",
