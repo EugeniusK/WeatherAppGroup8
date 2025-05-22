@@ -18,8 +18,33 @@ export default function MapPage() {
   const conditionIconMap: Record<string, string> = {
   "Cloudy": "cloudy",
   "Sunny": "sunny",
+  "Clear":"sunny",
+  "Mainly Sunny": "sunny",
+  "Mainly Clear": "sunny",
   "Rainy": "rainy",
   "Partly Cloudy": "partly-sunny",
+  "Foggy": "cloudy",
+  "Rime Fog": "cloudy",
+  "Light Drizzle": "rainy",
+  "Drizzle": "rainy",
+  "Heavy Drizzle": "rainy",
+  "Light Freezing Drizzle": "rainy",
+  "Freezing Drizzle": "rainy",
+  "Light Rain": "rainy",
+  "Heavy Rain": "rainy",
+  "Light Freezing Rain": "rainy",
+  "Freezing Rain": "rainy",
+  "Light Snow": "snow",
+  "Heavy Snow": "snow",
+  "Snow Grains": "snow",
+  "Light Showers": "rainy",
+  "Showers": "rainy",
+  "Heavy Showers": "rainy",
+  "Light Snow Showers": "snow",
+  "Snow Showers": "snow",
+  "Thunderstorm": "thunderstorm",
+  "Light Thunderstorms With Hail": "thunderstorm",
+  "Thunderstorm With Hail": "thunderstorm,"
   }
 
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
@@ -100,7 +125,6 @@ export default function MapPage() {
       {markers.map((marker, index) => {
         const lat = parseFloat(marker.lat);     // Iterate through all the available markers and place them on the map
         const lon = parseFloat(marker.lon);
-
         return (
           <Marker
             key={index}
