@@ -28,7 +28,7 @@ const HomeScreen = (): JSX.Element => {
       
       <View style={styles.carIconContainer}>
         <View style={styles.checkCircle}>
-          <Ionicons name="checkmark" size={40} color="white" />
+          <Ionicons name="checkmark" size={100} color="white" />
         </View>
         <View style={styles.carIcon}>
 
@@ -72,6 +72,8 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   carIconContainer: {
+    paddingTop: 70,
+    paddingBottom: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -83,15 +85,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     backgroundColor: 'transparent',
-    padding: 8,
+    padding: 4,
     borderRadius: 8,
   },
   checkCircle: {
     position: 'absolute',
     left: 30,
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
     backgroundColor: '#8CD867', // Green color from design
     justifyContent: 'center',
     alignItems: 'center',
@@ -99,11 +101,11 @@ const styles = StyleSheet.create({
   },
   carIcon: {
     // Increased size with fixed dimensions
-    width: 150,       // Larger fixed width in pixels
-    height: 75,      // Larger fixed height in pixels
+    width: 300,       // Larger fixed width in pixels
+    height: 'auto',      // Larger fixed height in pixels
     resizeMode: 'contain', // This ensures the image maintains its aspect ratio
     // If you need to position it
-    marginLeft: 10,
+    marginLeft: 400,
   },
   car: {
     // Simplified car representation - would be an actual image
