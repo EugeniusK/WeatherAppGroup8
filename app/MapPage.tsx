@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { LocationResult, searchLocation } from "../utils/geolocation";
+import { useLocalSearchParams } from 'expo-router';
 
 export default function MapPage() {
   const [markers, setMarkers] = useState<LocationResult[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [locations, setLocations] = useState(["Cambridge", "London"]); // These are pre set locations, can be changed once the search is implemented
+  const {selectedLocation, selectedDate} = useLocalSearchParams();
 
   useEffect(() => {
     const fetchMarkers = async () => {
