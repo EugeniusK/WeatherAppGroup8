@@ -1,12 +1,8 @@
-
-import React, { JSX, useState } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import HomeScreen from '../app/HomeScreen';
-import MapPage from '../app/MapPage';
-
-
-
+import { createStackNavigator } from '@react-navigation/stack';
+import React, { JSX } from 'react';
+import HomeScreen from './HomeScreen';
+import MapPage from './MapPage';
 
 const Stack = createStackNavigator();
 

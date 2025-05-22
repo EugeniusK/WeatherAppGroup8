@@ -1,15 +1,14 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import MapPage from '../app/MapPage'; // Ensure the file exists at this path or adjust the path accordingly
+import React from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 type RootStackParamList = {
-    MapPage: undefined; // Ensure this matches the route name in your stack
+    Map: undefined; // Changed from MapPage to Map to match the route name
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList, 'MapPage'>;
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Map'>;
 
 
 const WeatherMapToggle = () => {
