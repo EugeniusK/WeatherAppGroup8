@@ -1,11 +1,22 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import MapPage from '../app/MapPage'; // Ensure the file exists at this path or adjust the path accordingly
+
+type RootStackParamList = {
+    MapPage: undefined; // Ensure this matches the route name in your stack
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList, 'MapPage'>;
+
 
 const WeatherMapToggle = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.toggleButton}>
+      <TouchableOpacity style={styles.toggleButton} onPress={() => navigation.navigate('Map')}>
         <View style={styles.sunIcon}>
           <Ionicons name="sunny" size={24} color="white" />
         </View>

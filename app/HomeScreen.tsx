@@ -1,0 +1,147 @@
+import React, { JSX, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import CityCard from '../components/CityCard';
+import TripHeader from '../components/TripHeader';
+import WeatherMapToggle from '../components/WeatherMapToggle'; //TODO: Fix import path
+import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/commons';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import MapPage from '../app/MapPage';
+
+interface City {
+    id: number;
+    name: string;
+    date: string;
+    weather: string;
+  }
+  
+  // TODO:
+  // - want clicking on a city to open the page with City
+  // - want icons to Update
+  // - want to link buttons to other pages
+  // -want to get data from API
+  
+  //example data -- get from json data file 
+  const HomeScreen = (): JSX.Element => {
+    const [cities, setCities] = useState<City[]>([
+      { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },
+      { id: 2, name: 'Birmingham', date: '10 May', weather: 'sunny' },
+      { id: 3, name: 'Edinburgh', date: '15 May', weather: 'sunny' },
+    ]);
+  
+    return (
+      <View style={styles.container}>
+       {/* <TripHeader onEdit={() => console.log('Edit cities/dates pressed')} />  */}
+        
+        <View style={styles.carIconContainer}>
+          <View style={styles.checkCircle}>
+            <Ionicons name="checkmark" size={100} color="white" />
+          </View>
+          <View style={styles.carIcon}>
+  
+            <View style={styles.car}>
+            <Image
+              source={require('../assets/images/car.png')}
+              style={styles.localImage}
+              />
+            </View>
+          </View>
+          <View style={styles.editButtons}>
+            <TouchableOpacity style={styles.circleButton}>
+              <Ionicons name="sunny" size={24} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.circleButton}>
+              <Ionicons name="pencil" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <ScrollView style={styles.citiesList}>
+          {cities.map(city => (
+            <CityCard 
+              key={city.id}
+              cityName={city.name}
+              date={city.date}
+              weather={city.weather}
+            />
+          ))}
+        </ScrollView>
+        
+        <WeatherMapToggle />
+      </View>
+    );
+  };
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#F5F3E8', // Light beige background from the design
+      padding: 16,
+    },
+    carIconContainer: {
+      paddingTop: 70,
+      paddingBottom: 50,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: 20,
+      position: 'relative',
+      elevation: 5, // Android shadow
+      shadowColor: '#000', // iOS shadow
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      backgroundColor: 'transparent',
+      padding: 4,
+      borderRadius: 8,
+    },
+    checkCircle: {
+      position: 'absolute',
+      left: 30,
+      width: 200,
+      height: 200,
+      borderRadius: 100,
+      backgroundColor: '#8CD867', // Green color from design
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 2,
+    },
+    carIcon: {
+      // Increased size with fixed dimensions
+      width: 300,       // Larger fixed width in pixels
+      height: 'auto',      // Larger fixed height in pixels
+      resizeMode: 'contain', // This ensures the image maintains its aspect ratio
+      // If you need to position it
+      marginLeft: 400,
+    },
+    car: {
+      // Simplified car representation - would be an actual image
+    },
+    editButtons: {
+      position: 'absolute',
+      right: 10,
+      top: -20,
+      flexDirection: 'row',
+    },
+    circleButton: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: '#F9B233', // Yellow/orange from design
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginHorizontal: 5,
+    },
+    citiesList: {
+      flex: 1,
+    },
+    localImage: {
+      width: 100,
+      height: "auto",
+      resizeMode: 'contain',
+    },
+  });
+  
+  export default HomeScreen;
+  
