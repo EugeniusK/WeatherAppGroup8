@@ -1,8 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React, { JSX, useState } from 'react';
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CityCard from '../components/CityCard';
 import WeatherMapToggle from '../components/WeatherMapToggle';
+
+type RootStackParamList = {
+  Home: undefined;
+  Map: undefined;
+  Settings: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface City {
     id: number;
@@ -24,7 +34,9 @@ const HomeScreen = (): JSX.Element => {
       { id: 2, name: 'Birmingham', date: '10 May', weather: 'sunny' },
       { id: 3, name: 'Edinburgh', date: '15 May', weather: 'sunny' },
     ]);
-  
+
+    const navigation = useNavigation<NavigationProp>();
+
     return (
       <View style={styles.container}>
        {/* <TripHeader onEdit={() => console.log('Edit cities/dates pressed')} />  */}
@@ -43,7 +55,10 @@ const HomeScreen = (): JSX.Element => {
             </View>
           </View>
           <View style={styles.editButtons}>
-            <TouchableOpacity style={styles.circleButton}>
+            <TouchableOpacity 
+              style={styles.circleButton}
+              onPress={() => navigation.navigate('Settings')}
+            >
               <Ionicons name="settings" size={24} color="white" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.circleButton}>
@@ -52,18 +67,27 @@ const HomeScreen = (): JSX.Element => {
           </View>
         </View>
         
-        <ScrollView style={styles.citiesList}>
-          {cities.map(city => (
-            <CityCard 
-              key={city.id}
-              cityName={city.name}
-              date={city.date}
-              weather={city.weather}
-            />
-          ))}
-        </ScrollView>
+        <Text style={styles.weatherText}>Weather is suitable for a trip</Text>
         
-        <WeatherMapToggle />
+        <View style={styles.citiesSection}>
+          <ScrollView style={styles.citiesList}>
+            {cities.map(city => (
+              <CityCard 
+                key={city.id}
+                cityName={city.name}
+                date={city.date}
+                weather={city.weather}
+                onDelete={() => {
+                  setCities(currentCities => 
+                    currentCities.filter(c => c.id !== city.id)
+                  );
+                }}
+              />
+            ))}
+          </ScrollView>
+          
+          <WeatherMapToggle currentPage="Home" />
+        </View>
       </View>
     );
   };
@@ -71,25 +95,19 @@ const HomeScreen = (): JSX.Element => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5F3E8', // Light beige background from the design
+      backgroundColor: '#F5F3E8', // Light beige for top section
       padding: 16,
     },
     carIconContainer: {
-      paddingTop: 20,     // Reduced from 40
+      paddingTop: 40,
       paddingBottom: 0,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginVertical: 0,  // Removed vertical margin completely
+      marginVertical: 0,
       position: 'relative',
-      elevation: 5,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      backgroundColor: 'transparent',
+      backgroundColor: '#F5F3E8',
       padding: 4,
-      borderRadius: 8,
     },
     checkCircle: {
       position: 'absolute',
@@ -129,9 +147,29 @@ const HomeScreen = (): JSX.Element => {
       alignItems: 'center',
       marginHorizontal: 5,
     },
+    citiesSection: {
+      flex: 1,
+      backgroundColor: '#d9d9d9',
+      marginTop: 0,  // Changed from -30 to 0 to move section down
+      marginHorizontal: -16,
+      paddingHorizontal: 16,
+      paddingBottom: 16,
+      marginBottom: -16,
+      paddingTop: 20,
+    },
+    weatherText: {
+      color: '#8CD867',
+      fontSize: 24,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginTop: -50,
+      marginBottom: 15,
+      position: 'relative',
+      zIndex: 1,
+    },
     citiesList: {
       flex: 1,
-      marginTop: -20,    // Added negative margin to pull cities up
+      marginTop: 10,
     },
     localImage: {
       width: 300,      // Doubled from 150

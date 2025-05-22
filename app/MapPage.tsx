@@ -1,8 +1,9 @@
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import WeatherMapToggle from "../components/WeatherMapToggle";
 import { LocationResult, searchLocation } from "../utils/geolocation";
-import { useLocalSearchParams } from 'expo-router';
 
 export default function MapPage() {
   const [markers, setMarkers] = useState<LocationResult[]>([]);
@@ -60,6 +61,9 @@ export default function MapPage() {
         );
         })}
       </MapView>
+      <View style={styles.toggleContainer}>
+        <WeatherMapToggle currentPage="Map" />
+      </View>
     </View>
   );
 }
@@ -72,5 +76,11 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  toggleContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
   },
 });
