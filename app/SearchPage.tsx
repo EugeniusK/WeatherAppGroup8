@@ -2,19 +2,26 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import { Calendar } from "react-native-calendars";
+// import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router"; // for going back to previous page
+import { searchLocation } from "../utils/geolocation";
+let debounceTimer: NodeJS.Timeout; // for debouncing searching
 
-const locationSuggestions = [
-  "Cambridge, England",
-  "Canterbury, England",
-  "Camberley, England",
-  "Camden, England",
-];
+// previously for testing
+// const locationSuggestions = [
+//   "Cambridge, England",
+//   "Canterbury, England",
+//   "Camberley, England",
+//   "Camden, England",
+// ];
 
 export default function SearchPage() {
+  const router = useRouter();
+  
   // set usestates
   // const[variable, function to increment variable] = useState(initial value of variable)
   const [searchText, setSearchText] = useState("");
-  const [filteredLocations, setFilteredLocations] = useState(locationSuggestions);
+  const [filteredLocations, setFilteredLocations] = useState<string[]>([]); // set initial state to empty list (of string type)
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -22,11 +29,18 @@ export default function SearchPage() {
   // search function, filters list of locations by matching prefix with user input
   const handleSearch = (text: string) => {
     setSearchText(text);
-    setFilteredLocations(
-      locationSuggestions.filter((loc) =>
-        loc.toLowerCase().startsWith(text.toLowerCase())
-      )
-    );
+  
+    clearTimeout(debounceTimer); // rest debounce timer if user types
+
+    debounceTimer = setTimeout(async () => {
+      try {
+        const results = await searchLocation(text); // pass into function that implemenets API function
+        setFilteredLocations(results.map((r) => r.display_name)); // set list of location to results obtained from API function
+      } catch (error) {
+        console.error("Location search failed:", error);
+        setFilteredLocations([]);
+      }
+    }, 500); //  adds 500 ms delay so that we only search 
   };
 
   return (
@@ -57,11 +71,11 @@ export default function SearchPage() {
             style={styles.locationItem}
             onPress={() => setSelectedLocation(item)}
           >
-            <Ionicons name="location" size={20} color="red" style={styles.icon} />
+            <Ionicons name="location" size={20} color="red" style={styles.icon} /> 
             <Text style={styles.locationText}>{item}</Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={<Text style={styles.noResults}>No results found</Text>}
+        ListEmptyComponent={<Text style={styles.noResults}>No results found</Text>} // display No results found if list empty
       />
 
       {/* Selected Information */}
@@ -112,20 +126,17 @@ export default function SearchPage() {
 
       {/* Confirm Button */}
       <TouchableOpacity
-  style={styles.confirmButton}
-  onPress={() => {
-    if (selectedLocation && selectedDate) {
-      navigation.navigate("MapPage", {
-        location: selectedLocation,
-        date: selectedDate,
-      });
-    } else {
-      alert("Please select both a location and a date.");
-    }
-  }}
->
-  <Text style={styles.confirmText}>Confirm</Text>
-</TouchableOpacity>
+      style={styles.confirmButton}
+      onPress={() => {
+       if (selectedLocation && selectedDate) {
+         router.push("/"); // go back to Home Page
+       } else {
+       alert("Please select both a location and a date.");
+       }
+      }}
+      >
+    <Text style={styles.confirmText}>Confirm</Text>
+    </TouchableOpacity>
     </View>
   );
 }
