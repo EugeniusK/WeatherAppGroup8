@@ -1,13 +1,15 @@
-import HomeScreen from "./index";
-// import MapPage from "./MapPage";
+import { createStackNavigator } from '@react-navigation/stack';
 import React from "react";
+import HomeScreen from "./HomeScreen";
+import MapPage from "./MapPage";
+
+const Stack = createStackNavigator();
 
 export default function RootLayout() {
-
   return (
-    // <div>
-    <HomeScreen />
-    // {/* <Button onPress={() => router.navigate("/MapPage")}>Maps</Button> */}
-    // </div>
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Map" component={MapPage} />
+    </Stack.Navigator>
   );
 }

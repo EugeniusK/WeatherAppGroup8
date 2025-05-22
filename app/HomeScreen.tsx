@@ -1,29 +1,24 @@
-import React, { JSX, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { JSX, useState } from 'react';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import CityCard from '../components/CityCard';
-import TripHeader from '../components/TripHeader';
-import WeatherMapToggle from '../components/WeatherMapToggle'; //TODO: Fix import path
-import { UpdateSources } from 'react-native-calendars/src/expandableCalendar/commons';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-import MapPage from '../app/MapPage';
+import WeatherMapToggle from '../components/WeatherMapToggle';
 
 interface City {
     id: number;
     name: string;
     date: string;
     weather: string;
-  }
-  
-  // TODO:
-  // - want clicking on a city to open the page with City
-  // - want icons to Update
-  // - want to link buttons to other pages
-  // -want to get data from API
-  
-  //example data -- get from json data file 
-  const HomeScreen = (): JSX.Element => {
+}
+
+// TODO:
+// - want clicking on a city to open the page with City
+// - want icons to Update
+// - want to link buttons to other pages
+// -want to get data from API
+
+//example data -- get from json data file 
+const HomeScreen = (): JSX.Element => {
     const [cities, setCities] = useState<City[]>([
       { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },
       { id: 2, name: 'Birmingham', date: '10 May', weather: 'sunny' },
@@ -49,7 +44,7 @@ interface City {
           </View>
           <View style={styles.editButtons}>
             <TouchableOpacity style={styles.circleButton}>
-              <Ionicons name="sunny" size={24} color="white" />
+              <Ionicons name="settings" size={24} color="white" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.circleButton}>
               <Ionicons name="pencil" size={24} color="white" />
@@ -80,15 +75,15 @@ interface City {
       padding: 16,
     },
     carIconContainer: {
-      paddingTop: 70,
-      paddingBottom: 50,
+      paddingTop: 20,     // Reduced from 40
+      paddingBottom: 0,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginVertical: 20,
+      marginVertical: 0,  // Removed vertical margin completely
       position: 'relative',
-      elevation: 5, // Android shadow
-      shadowColor: '#000', // iOS shadow
+      elevation: 5,
+      shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.2,
       shadowRadius: 4,
@@ -98,47 +93,49 @@ interface City {
     },
     checkCircle: {
       position: 'absolute',
-      left: 30,
+      left: -10,          // Changed from -20 to 10 for slight right adjustment
       width: 200,
       height: 200,
       borderRadius: 100,
-      backgroundColor: '#8CD867', // Green color from design
+      backgroundColor: '#8CD867',
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 2,
     },
     carIcon: {
-      // Increased size with fixed dimensions
-      width: 300,       // Larger fixed width in pixels
-      height: 'auto',      // Larger fixed height in pixels
-      resizeMode: 'contain', // This ensures the image maintains its aspect ratio
-      // If you need to position it
-      marginLeft: 400,
+      width: 300,
+      height: 300,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 300,    // Increased from 200 to push further right
     },
     car: {
-      // Simplified car representation - would be an actual image
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     editButtons: {
       position: 'absolute',
       right: 10,
-      top: -20,
+      top: 20,           // Changed from -20 to move buttons down
       flexDirection: 'row',
     },
     circleButton: {
       width: 50,
       height: 50,
       borderRadius: 25,
-      backgroundColor: '#F9B233', // Yellow/orange from design
+      backgroundColor: '#F9B233',
       justifyContent: 'center',
       alignItems: 'center',
       marginHorizontal: 5,
     },
     citiesList: {
       flex: 1,
+      marginTop: -20,    // Added negative margin to pull cities up
     },
     localImage: {
-      width: 100,
-      height: "auto",
+      width: 300,      // Doubled from 150
+      height: 300,     // Doubled from 150
       resizeMode: 'contain',
     },
   });
