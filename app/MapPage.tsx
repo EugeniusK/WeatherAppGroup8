@@ -1,10 +1,10 @@
 import { getHourlyWeatherForLocation } from '@/utils/weather';
 import { Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import { AppContext } from '../utils/context';
 import { LocationResult, searchLocation } from "../utils/geolocation";
 
 interface WeatherMarker extends LocationResult {
@@ -48,17 +48,11 @@ export default function MapPage() {
   "Thunderstorm With Hail": "thunderstorm,"
   }
 
+  const context = useContext(AppContext)!;
+  const { globalState, setGlobalState } = context;
+
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
-  const {selectedLocations, selectedDates} = useLocalSearchParams();
 
-  const allLocations = Array.isArray(selectedLocations) ? selectedLocations: selectedLocations ?.split(',') || [];
-  const allDates = Array.isArray(selectedDates) ? selectedDates: selectedDates?.split(',') || [];
-
-  // Create an array of { location, date } objects
-  const locationDatePairs = allLocations.map((loc, index) => ({
-    location: loc,
-    date: allDates[index]
-  }));
 
   useEffect(() => {
     async function loadFonts() {
@@ -77,7 +71,7 @@ export default function MapPage() {
       try {
         const newMarkers: WeatherMarker[] = []; // collect markers here
 
-        for (const place of locationDatePairs) {
+        for (const place of globalState.tripDestinations) {
           const locationData = await searchLocation(place.location); // Iterate through all locations and get relevant data (long, lat etc.)
           if (locationData.length > 0) {
 
