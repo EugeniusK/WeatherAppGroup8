@@ -1,11 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useEffect, useState } from "react";
+import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
-// import { useNavigation } from "@react-navigation/native";
-import { useRouter } from "expo-router"; // for going back to previous page
 import { searchLocation } from "../utils/geolocation";
-let debounceTimer: NodeJS.Timeout; // for debouncing searching
 
 // previously for testing
 // const locationSuggestions = [
@@ -15,40 +14,114 @@ let debounceTimer: NodeJS.Timeout; // for debouncing searching
 //   "Camden, England",
 // ];
 
+type RootStackParamList = {
+  Home: {
+    newCity?: {
+      name: string;
+      date: string;
+      weather: string;
+    };
+  };
+  Search: {
+    editMode?: boolean;
+    cityId?: number;
+    initialCity?: {
+      name: string;
+      date: string;
+      weather: string;
+    };
+  };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+type RouteProps = RouteProp<RootStackParamList, 'Search'>;
+
+let debounceTimer: ReturnType<typeof setTimeout>;
+
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = monthNames[date.getMonth()];
+  return `${day} ${month}`;
+};
+
+const extractCityName = (fullLocation: string): string => {
+  return fullLocation.split(',')[0].trim();
+};
+
 export default function SearchPage() {
-  const router = useRouter();
+  const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProps>();
+  const isEditMode = route.params?.editMode || false;
+  const initialCity = route.params?.initialCity;
   
-  // set usestates
-  // const[variable, function to increment variable] = useState(initial value of variable)
   const [searchText, setSearchText] = useState("");
-  const [filteredLocations, setFilteredLocations] = useState<string[]>([]); // set initial state to empty list (of string type)
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState(initialCity?.name || "");
+  const [selectedDate, setSelectedDate] = useState(initialCity?.date || "");
   const [calendarVisible, setCalendarVisible] = useState(false);
 
-  // search function, pass input string into function that implements API request
+  useEffect(() => {
+    if (isEditMode && initialCity) {
+      setSearchText(initialCity.name);
+    }
+  }, [isEditMode, initialCity]);
+
   const handleSearch = (text: string) => {
     setSearchText(text);
-  
-    clearTimeout(debounceTimer); // rest debounce timer if user types
-
+    clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
-        const results = await searchLocation(text); // pass into function that implemenets API function
-        setFilteredLocations(results.map((r) => r.display_name)); // set list of location to results obtained from API function
+        const results = await searchLocation(text);
+        setFilteredLocations(results.map((r) => r.display_name));
       } catch (error) {
         console.error("Location search failed:", error);
         setFilteredLocations([]);
       }
-    }, 500); //  adds 500 ms delay so that we only search 
+    }, 500);
+  };
+
+  const handleConfirm = () => {
+    if (selectedLocation && selectedDate) {
+      const cityData = {
+        name: extractCityName(selectedLocation),
+        date: formatDate(selectedDate),
+        weather: 'sunny',
+      };
+
+      if (isEditMode && route.params?.cityId) {
+        // Update existing city
+        navigation.navigate('Home', {
+          newCity: {
+            ...cityData,
+            id: route.params.cityId
+          }
+        });
+      } else {
+        // Add new city
+        navigation.navigate('Home', {
+          newCity: cityData
+        });
+      }
+    } else {
+      alert("Please select both a location and a date.");
+    }
   };
 
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity 
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
         <Ionicons name="arrow-back" size={28} color="white" />
       </TouchableOpacity>
+
+      <Text style={styles.headerText}>
+        {isEditMode ? 'Edit City' : 'Add New City'}
+      </Text>
 
       {/* Search Input */}
       <View style={styles.searchContainer}>
@@ -57,46 +130,66 @@ export default function SearchPage() {
           placeholder="Search location"
           placeholderTextColor="#999"
           value={searchText}
-          onChangeText={handleSearch} // call the function handleSearch when input text changes
+          onChangeText={handleSearch}
         />
         <Ionicons name="search" size={20} color="#444" style={styles.searchIcon} />
       </View>
 
-      {/* Location Suggestions */}
-      <FlatList
-        data={filteredLocations}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.locationItem}
-            onPress={() => setSelectedLocation(item)}
-          >
-            <Ionicons name="location" size={20} color="red" style={styles.icon} /> 
-            <Text style={styles.locationText}>{item}</Text>
-          </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text style={styles.noResults}>No results found</Text>} // display No results found if list empty
-      />
+      <View style={styles.contentContainer}>
+        {/* Location Suggestions */}
+        <FlatList
+          data={filteredLocations}
+          keyExtractor={(item, index) => `${item}-${index}`}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.locationItem}
+              onPress={() => setSelectedLocation(item)}
+            >
+              <Ionicons name="location" size={20} color="red" style={styles.icon} /> 
+              <View style={styles.locationTextContainer}>
+                <Text style={styles.locationText}>{extractCityName(item)}</Text>
+                <Text style={styles.locationDetails}>{item.substring(item.indexOf(',') + 1).trim()}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          ListEmptyComponent={<Text style={styles.noResults}>No results found</Text>}
+          style={styles.suggestionsList}
+        />
 
-      {/* Selected Information */}
-      {selectedLocation ? (
-        <View style={styles.selectionDisplay}>
-          <Text style={styles.selectionLabel}>Location:</Text>
-          <Text style={styles.selectionValue}>{selectedLocation}</Text>
-        </View>
-      ) : null}
+        {/* Selected Information */}
+        {selectedLocation ? (
+          <View style={styles.selectionDisplay}>
+            <Text style={styles.selectionLabel}>Location:</Text>
+            <Text style={styles.selectionValue}>{extractCityName(selectedLocation)}</Text>
+            <Text style={styles.selectionDetails}>{selectedLocation.substring(selectedLocation.indexOf(',') + 1).trim()}</Text>
+          </View>
+        ) : null}
 
-      {selectedDate ? (
-        <View style={styles.selectionDisplay}>
-          <Text style={styles.selectionLabel}>Date:</Text>
-          <Text style={styles.selectionValue}>{selectedDate}</Text>
-        </View>
-      ) : null}
+        {selectedDate ? (
+          <View style={styles.selectionDisplay}>
+            <Text style={styles.selectionLabel}>Date:</Text>
+            <Text style={styles.selectionValue}>{formatDate(selectedDate)}</Text>
+          </View>
+        ) : null}
 
-      {/* Date Picker Button */}
-      <TouchableOpacity style={styles.dateButton} onPress={() => setCalendarVisible(true)}>
-        <Text style={styles.dateButtonText}>Select Date</Text>
-      </TouchableOpacity>
+        {/* Date Picker Button */}
+        <TouchableOpacity 
+          style={styles.dateButton} 
+          onPress={() => setCalendarVisible(true)}
+        >
+          <Text style={styles.dateButtonText}>Select Date</Text>
+        </TouchableOpacity>
+
+        {/* Confirm Button */}
+        <TouchableOpacity
+          style={styles.confirmButton}
+          onPress={handleConfirm}
+        >
+          <Text style={styles.confirmText}>
+            {isEditMode ? 'Update City' : 'Add City'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Calendar Modal */}
       <Modal visible={calendarVisible} transparent animationType="fade">
@@ -123,28 +216,6 @@ export default function SearchPage() {
           </View>
         </View>
       </Modal>
-
-      {/* Confirm Button */}
-      <TouchableOpacity
-      style={styles.confirmButton}
-      onPress={() => {
-       if (selectedLocation && selectedDate) {
-        // both are of string data type
-        // console.log("Selected Location:", typeof selectedLocation);
-        // console.log("Selected Date:", typeof selectedDate);
-
-        router.navigate({
-          pathname: '/MapPage',
-          params: {location: typeof selectedLocation,
-                   date: typeof selectedDate}
-        }); // go back to Map Page
-       } else {
-        alert("Please select both a location and a date.");
-       }
-      }}
-      >
-    <Text style={styles.confirmText}>Confirm</Text>
-    </TouchableOpacity>
     </View>
   );
 }
@@ -152,8 +223,11 @@ export default function SearchPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#f1ebda",
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 16,
   },
   backButton: {
     backgroundColor: "#4e70db",
@@ -163,14 +237,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 50,
+    marginLeft: 16,
     marginBottom: 16,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#d9d9d9", 
+    backgroundColor: "#d9d9d9",
     borderRadius: 16,
     paddingHorizontal: 12,
+    marginHorizontal: 16,
     marginBottom: 12,
     height: 50,
     shadowColor: "#000",
@@ -187,10 +263,14 @@ const styles = StyleSheet.create({
   searchIcon: {
     marginLeft: 8,
   },
+  suggestionsList: {
+    flex: 1,
+    marginBottom: 10,
+  },
   locationItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f0ba42", 
+    backgroundColor: "#f0ba42",
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 20,
@@ -200,9 +280,18 @@ const styles = StyleSheet.create({
     marginRight: 10,
     color: "#4e70db",
   },
+  locationTextContainer: {
+    flex: 1,
+  },
   locationText: {
     fontSize: 16,
     color: "#222",
+    fontWeight: '500',
+  },
+  locationDetails: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
   },
   noResults: {
     textAlign: "center",
@@ -247,18 +336,31 @@ const styles = StyleSheet.create({
   selectionValue: {
     fontSize: 16,
     color: "#222",
+    marginTop: 4,
+  },
+  selectionDetails: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
   },
   confirmButton: {
-    marginTop: 24,
+    marginTop: 16,
+    marginBottom: 20,
     backgroundColor: "#a0e778",
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
-    marginBottom: 30,
   },
   confirmText: {
     color: "#222",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 16,
   },
 });

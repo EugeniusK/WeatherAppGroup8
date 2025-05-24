@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { ImageBackground, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -81,15 +81,23 @@ type RootStackParamList = {
   Home: undefined;
   Map: undefined;
   Settings: undefined;
-  DestinationDetailsPage: { cityName: string };
+  DestinationDetailsPage: { 
+    cityName: string;
+    date: string;
+    weather: string;
+  };
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
+type RouteProps = RouteProp<RootStackParamList, 'DestinationDetailsPage'>;
 
 export default function DestinationDetailsPage() {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteProps>();
+  const { cityName, date, weather } = route.params;
+
   // TODO: This will come from API later
-  const currentWeather: WeatherType = 'sunny';
+  const currentWeather: WeatherType = weather as WeatherType || 'sunny';
   
   const weatherData = [
     12.3, 11.5, 10.7, 10.3, 9.4, 9.4, 10.4, 11.1, 12.2, 12.6, 13.5, 13.7, 15.0,
@@ -154,6 +162,16 @@ export default function DestinationDetailsPage() {
       textShadowOffset: { width: 1, height: 1 },
       textShadowRadius: 3,
     },
+    dateText: {
+      textAlign: "center",
+      color: '#000000',
+      fontSize: 14,
+      marginTop: 4,
+      opacity: 0.7,
+      textShadowColor: 'rgba(255, 255, 255, 0.5)',
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 3,
+    },
     feelsLike: {
       fontSize: 72,
       lineHeight: 72,
@@ -187,7 +205,7 @@ export default function DestinationDetailsPage() {
       textShadowRadius: 3,
     },
     backButton: {
-      backgroundColor: 'rgba(51, 102, 255, 0.3)',
+      backgroundColor: '#3366FF',
       width: 50,
       height: 50,
       borderRadius: 25,
@@ -195,8 +213,9 @@ export default function DestinationDetailsPage() {
       alignItems: "center",
       marginTop: 0,
       marginBottom: 16,
-      borderWidth: 1,
-      borderColor: 'rgba(255, 255, 255, 0.3)',
+      alignSelf: 'flex-start',
+      marginLeft: 16,
+      borderWidth: 0,
     },
   });
 
@@ -216,7 +235,8 @@ export default function DestinationDetailsPage() {
               <Ionicons name="arrow-back" size={28} color="white" />
             </TouchableOpacity>
             <View>
-              <ThemedText style={[styles.centerText, { color: '#000000' }]} type="subtitle">Cambridge, UK</ThemedText>
+              <ThemedText style={[styles.centerText, { color: '#000000' }]} type="subtitle">{cityName}</ThemedText>
+              <ThemedText style={styles.dateText} type="default">{date}</ThemedText>
             </View>
 
             <View style={styles.temperatureContainer}>
@@ -240,7 +260,7 @@ export default function DestinationDetailsPage() {
             </View>
             <View style={styles.summaryContainer}>
               <ThemedText type="title" style={[styles.centerText, { color: '#000000' }]}>
-                warning: snow{" "}
+                {weather}
               </ThemedText>
             </View>
 
