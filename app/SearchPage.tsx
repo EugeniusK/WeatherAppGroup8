@@ -5,14 +5,10 @@ import React, { useEffect, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { searchLocation } from "../utils/geolocation";
+import { useContext } from "react";
+import { AppContext } from "../utils/context";
+import { getHourlyWeatherForLocation } from "../utils/weather";
 
-// previously for testing
-// const locationSuggestions = [
-//   "Cambridge, England",
-//   "Canterbury, England",
-//   "Camberley, England",
-//   "Camden, England",
-// ];
 
 type RootStackParamList = {
   Home: {
@@ -55,6 +51,15 @@ export default function SearchPage() {
   const route = useRoute<RouteProps>();
   const isEditMode = route.params?.editMode || false;
   const initialCity = route.params?.initialCity;
+
+  // get global context
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("AppContext must be used within an AppProvider");
+  }
+
+  const { globalState, setGlobalState } = context;
   
   const [searchText, setSearchText] = useState("");
   const [filteredLocations, setFilteredLocations] = useState<string[]>([]);
@@ -82,8 +87,24 @@ export default function SearchPage() {
     }, 500);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedLocation && selectedDate) {
+
+      console.log("waiting");
+      const weather = await getHourlyWeatherForLocation(selectedLocation, new Date(selectedDate), new Date(selectedDate));
+      console.log("waiting done");
+
+      const newTrip: TripDestination = {
+        location: selectedLocation,
+        date: selectedDate,
+        weather: weather,
+      };
+
+      setGlobalState(prevState => ({
+        ...prevState,
+        tripDestinations: [...prevState.tripDestinations, newTrip],
+      }));
+
       const cityData = {
         name: extractCityName(selectedLocation),
         date: formatDate(selectedDate),
