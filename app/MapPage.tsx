@@ -11,6 +11,7 @@ interface WeatherMarker extends LocationResult {
   iconName: string;
 }
 
+
 export default function MapPage() {
   const [markers, setMarkers] = useState<WeatherMarker[]>([]);
   const [loading, setLoading] = useState(true);

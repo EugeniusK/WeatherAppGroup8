@@ -1,16 +1,35 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-const WeatherMapToggle = () => {
+type RootStackParamList = {
+  Home: undefined;
+  Map: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
+
+interface WeatherMapToggleProps {
+  currentPage: 'Home' | 'Map';
+}
+
+const WeatherMapToggle: React.FC<WeatherMapToggleProps> = ({ currentPage }) => {
+  const navigation = useNavigation<NavigationProp>();
+
+  const handlePress = () => {
+    navigation.navigate(currentPage === 'Home' ? 'Map' : 'Home');
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.toggleButton}>
-        <View style={styles.sunIcon}>
-          <Ionicons name="sunny" size={24} color="white" />
+      <TouchableOpacity style={styles.toggleButton} onPress={handlePress}>
+        <View style={[styles.iconContainer, currentPage === 'Home' && styles.activeYellow]}>
+          <Ionicons name="sunny" size={32} color="white" />
         </View>
-        <View style={styles.mapIcon}>
-          <Ionicons name="map-outline" size={24} color="white" />
+        <View style={[styles.iconContainer, currentPage === 'Map' && styles.activeYellow]}>
+          <Ionicons name="map-outline" size={32} color="white" />
         </View>
       </TouchableOpacity>
     </View>
@@ -25,24 +44,19 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     flexDirection: 'row',
-    backgroundColor: '#3066F1', // Blue color from design
+    backgroundColor: '#3066F1',
+    borderRadius: 40,
+    padding: 8,
+  },
+  iconContainer: {
+    width: 60,
+    height: 60,
     borderRadius: 30,
-    padding: 5,
-  },
-  sunIcon: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    backgroundColor: '#F9B233', // Yellow/orange from design
     justifyContent: 'center',
     alignItems: 'center',
   },
-  mapIcon: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    justifyContent: 'center',
-    alignItems: 'center',
+  activeYellow: {
+    backgroundColor: '#F9B233',
   },
 });
 
