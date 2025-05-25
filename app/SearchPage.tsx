@@ -87,11 +87,11 @@ export default function SearchPage() {
     }, 500);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (selectedLocation && selectedDate) {
 
       console.log("waiting");
-      const weather = await getHourlyWeatherForLocation(selectedLocation, new Date(selectedDate), new Date(selectedDate));
+      const weather = getHourlyWeatherForLocation(selectedLocation, new Date(selectedDate), new Date(selectedDate));
       console.log("waiting done");
 
       const newTrip: TripDestination = {
