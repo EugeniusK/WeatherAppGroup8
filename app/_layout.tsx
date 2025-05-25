@@ -1,6 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from "react";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AppProvider } from '../utils/context';
 import DestinationDetailsPage from "./DestinationDetailsPage";
 import HomeScreen from "./HomeScreen";
 import MapPage from "./MapPage";
@@ -11,6 +12,7 @@ const Stack = createStackNavigator();
 
 export default function RootLayout() {
   return (
+    <AppProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack.Navigator 
         initialRouteName="Home"
@@ -27,5 +29,6 @@ export default function RootLayout() {
         <Stack.Screen name="DestinationDetailsPage" component={DestinationDetailsPage} />
       </Stack.Navigator>
     </GestureHandlerRootView>
+    </AppProvider>
   );
 }

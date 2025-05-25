@@ -4,8 +4,10 @@ import * as Font from 'expo-font';
 import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
+import WeatherMapToggle from '../components/WeatherMapToggle';
 import { AppContext } from '../utils/context';
 import { LocationResult, searchLocation } from "../utils/geolocation";
+
 
 interface WeatherMarker extends LocationResult {
   iconName: string;
@@ -48,10 +50,9 @@ export default function MapPage() {
   "Light Thunderstorms With Hail": "thunderstorm",
   "Thunderstorm With Hail": "thunderstorm,"
   }
-
   const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
-
+  console.log("This is state:" + globalState);
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
 
 
@@ -71,7 +72,6 @@ export default function MapPage() {
       setLoading(true);
       try {
         const newMarkers: WeatherMarker[] = []; // collect markers here
-
         for (const place of globalState.tripDestinations) {
           const locationData = await searchLocation(place.location); // Iterate through all locations and get relevant data (long, lat etc.)
           if (locationData.length > 0) {
@@ -156,6 +156,9 @@ export default function MapPage() {
           />
         )}
       </MapView>
+      <View style={styles.toggleContainer}>
+        <WeatherMapToggle currentPage="Map" />
+      </View>
     </View>
   );
 }
@@ -187,6 +190,13 @@ const styles = StyleSheet.create({
     borderColor: '#D9D900',
     backgroundColor: '#D9D900',
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toggleContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
     alignItems: 'center',
   },
 });
