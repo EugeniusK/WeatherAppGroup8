@@ -1,15 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
 
 type RootStackParamList = {
   Home: undefined;
   Map: undefined;
   Settings: undefined;
-  DestinationDetailsPage: { cityName: string };
+  Search: undefined;
+  DestinationDetailsPage: { cityName: string; date: string; weather: string };
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
@@ -19,43 +20,120 @@ interface CityCardProps {
   date: string;
   weather: string;
   onDelete: () => void;
+  onEdit: () => void;
 }
 
-const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete }) => {
+const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete, onEdit }) => {
   const navigation = useNavigation<NavigationProp>();
   const translateX = useRef(new Animated.Value(0)).current;
-  const isOpen = useRef(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const resetPosition = () => {
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
+    Animated.spring(translateX, {
+      toValue: 0,
+      useNativeDriver: true,
+      tension: 40,
+      friction: 7,
+      velocity: 1
+    }).start(() => {
+      setIsAnimating(false);
+    });
+  };
+
+  const animateToPosition = (toValue: number) => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    Animated.sequence([
+      Animated.spring(translateX, {
+        toValue,
+        useNativeDriver: true,
+        tension: 40,
+        friction: 7,
+        velocity: 1
+      }),
+      Animated.delay(150),
+      Animated.spring(translateX, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 40,
+        friction: 7,
+        velocity: 1
+      })
+    ]).start(() => {
+      setIsAnimating(false);
+    });
+  };
 
   const onGestureEvent = (event: PanGestureHandlerGestureEvent) => {
+    if (isAnimating) return;
+
     const { translationX } = event.nativeEvent;
-    // Limit the translation to between 0 and -75
-    const newX = Math.max(-75, Math.min(0, translationX));
+    // Allow translation between -75 (left swipe) and 75 (right swipe)
+    const newX = Math.max(-75, Math.min(75, translationX));
     translateX.setValue(newX);
   };
 
+  const handleDelete = () => {
+    if (isAnimating) return;
+    
+    setIsAnimating(true);
+    Animated.spring(translateX, {
+      toValue: -75,
+      useNativeDriver: true,
+      tension: 40,
+      friction: 7
+    }).start(() => {
+      setIsAnimating(false);
+      onDelete();
+    });
+  };
+
   const onHandlerStateChange = (event: PanGestureHandlerGestureEvent) => {
-    if (event.nativeEvent.state === 4) { // END state
-      const { translationX } = event.nativeEvent;
+    if (isAnimating) return;
+
+    if (event.nativeEvent.state === State.END) {
+      const { translationX, velocityX } = event.nativeEvent;
       
-      if (translationX < -37.5) { // If swiped left more than halfway
-        isOpen.current = true;
-        Animated.spring(translateX, {
-          toValue: -75,
-          useNativeDriver: true,
-        }).start();
+      // Use velocity to help determine swipe direction
+      const isQuickSwipe = Math.abs(velocityX) > 500;
+      const swipeThreshold = isQuickSwipe ? 20 : 37.5;
+      
+      if (translationX < -swipeThreshold || (isQuickSwipe && velocityX < 0)) {
+        // Swipe left - delete
+        handleDelete();
+      } else if (translationX > swipeThreshold || (isQuickSwipe && velocityX > 0)) {
+        // Swipe right - edit
+        animateToPosition(75);
+        setTimeout(() => {
+          if (!isAnimating) {
+            onEdit();
+          }
+        }, 150);
       } else {
-        isOpen.current = false;
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
+        resetPosition();
       }
+    } else if (event.nativeEvent.state === State.CANCELLED) {
+      resetPosition();
     }
   };
 
   const handlePress = () => {
-    if (!isOpen.current) {
-      navigation.navigate('DestinationDetailsPage', { cityName });
+    if (!isAnimating) {
+      navigation.navigate('DestinationDetailsPage', { 
+        cityName,
+        date,
+        weather
+      });
+    }
+  };
+
+  const handleEdit = () => {
+    if (!isAnimating) {
+      onEdit();
     }
   };
 
@@ -63,18 +141,28 @@ const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete }
     <GestureHandlerRootView>
       <View style={styles.container}>
         <View style={styles.deleteButton}>
-          <TouchableOpacity onPress={onDelete} style={styles.deleteCircle}>
+          <TouchableOpacity onPress={handleDelete} style={styles.deleteCircle}>
             <Ionicons name="trash" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.editButton}>
+          <TouchableOpacity onPress={handleEdit} style={styles.editCircle}>
+            <Ionicons name="pencil" size={24} color="white" />
           </TouchableOpacity>
         </View>
         <PanGestureHandler
           onGestureEvent={onGestureEvent}
           onHandlerStateChange={onHandlerStateChange}
+          activeOffsetX={[-15, 15]}
         >
           <Animated.View style={[styles.cardContent, {
             transform: [{ translateX }]
           }]}>
-            <TouchableOpacity onPress={handlePress} style={styles.cardTouchable}>
+            <TouchableOpacity 
+              onPress={handlePress} 
+              style={styles.cardTouchable}
+              activeOpacity={0.7}
+            >
               <View style={styles.weatherIcon}>
                 <Ionicons name="sunny-outline" size={24} color="black" />
               </View>
@@ -105,10 +193,25 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderColor: '#E8E6D9',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 8,
   },
   deleteButton: {
     position: 'absolute',
     right: 20,
+    top: '50%',
+    transform: [{ translateY: -25 }],
+    zIndex: -1,
+  },
+  editButton: {
+    position: 'absolute',
+    left: 20,
     top: '50%',
     transform: [{ translateY: -25 }],
     zIndex: -1,
@@ -118,6 +221,14 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: '#FF3B30',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#F9B233',
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DestinationDetailsPage from "./DestinationDetailsPage";
 import HomeScreen from "./HomeScreen";
 import MapPage from "./MapPage";
+import SearchPage from "./SearchPage";
 import SettingsPage from "./SettingsPage";
 
 const Stack = createStackNavigator();
@@ -22,6 +23,7 @@ export default function RootLayout() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Map" component={MapPage} />
         <Stack.Screen name="Settings" component={SettingsPage} />
+        <Stack.Screen name="Search" component={SearchPage} />
         <Stack.Screen name="DestinationDetailsPage" component={DestinationDetailsPage} />
       </Stack.Navigator>
     </GestureHandlerRootView>

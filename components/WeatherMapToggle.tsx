@@ -47,6 +47,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#3066F1',
     borderRadius: 40,
     padding: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8, // for Android
   },
   iconContainer: {
     width: 60,
@@ -57,6 +65,14 @@ const styles = StyleSheet.create({
   },
   activeYellow: {
     backgroundColor: '#F9B233',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4, // for Android
   },
 });
 
