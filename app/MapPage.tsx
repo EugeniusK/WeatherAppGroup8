@@ -48,11 +48,10 @@ export default function MapPage() {
   "Snow Showers": "snow",
   "Thunderstorm": "thunderstorm",
   "Light Thunderstorms With Hail": "thunderstorm",
-  "Thunderstorm With Hail": "thunderstorm,"
+  "Thunderstorm With Hail": "thunderstorm",
   }
   const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
-  console.log("This is state:" + globalState);
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
 
 
@@ -81,7 +80,6 @@ export default function MapPage() {
             const endDate = new Date(startDate);               // Get the weather data for 1 day
             endDate.setDate(startDate.getDate() + 1);
             const weatherData = await getHourlyWeatherForLocation(marker, startDate, endDate);
-
             // Count frequency of weather conditions
             const conditionCounts: Record<string, number> = {};
             for (const hourly of weatherData) {
@@ -131,7 +129,7 @@ export default function MapPage() {
         }}
       >
       {markers.map((marker, index) => {
-        const lat = parseFloat(marker.lat);     // Iterate through all the available markers and place them on the map
+        const lat = parseFloat(marker.lat);     // Iterate through all the available markers and place them on the map along with the correct icons
         const lon = parseFloat(marker.lon);
         return (
           <Marker
@@ -156,6 +154,7 @@ export default function MapPage() {
           />
         )}
       </MapView>
+      {/* Allows you to go back to the home page */}
       <View style={styles.toggleContainer}>
         <WeatherMapToggle currentPage="Map" />
       </View>

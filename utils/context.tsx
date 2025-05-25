@@ -10,7 +10,7 @@ export default function ANYPage() {
 }
 */
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { searchLocation } from './geolocation';
 
 export interface TripDestination {
@@ -40,7 +40,18 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [globalState, setGlobalState] = useState<GlobalState>({
-    tripDestinations: [],
+    tripDestinations: [
+      {
+        location: "Cambridge",
+        date: new Date().toISOString().split('T')[0], // Today's date
+        weather: []
+      },
+      {
+        location: "London",
+        date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+        weather: []
+      },
+    ],
     settings: {
       units: 'celsius',
       contrast: 'normal',
