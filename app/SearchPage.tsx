@@ -96,6 +96,9 @@ export default function SearchPage() {
         location: selectedLocation,
         date: selectedDate,
         weather: weather,
+        latitude: parseFloat(selectedLocationExact[0].lat),
+        longitude: parseFloat(selectedLocationExact[0].lon),
+
       };
 
       setGlobalState(prevState => ({

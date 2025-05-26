@@ -15,6 +15,8 @@ import { HourlyWeatherData } from './weather';
 export interface TripDestination {
   location: string;
   date: string; // yyyy-mm-dd
+  latitude: number;
+  longitude: number;
   weather: HourlyWeatherData[] // 24 hour weather data
 }
 

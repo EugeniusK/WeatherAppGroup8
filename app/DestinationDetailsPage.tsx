@@ -14,8 +14,7 @@ import { LineChart } from "react-native-chart-kit";
 import { AbstractChartConfig } from "react-native-chart-kit/dist/AbstractChart";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient, Path, Stop } from "react-native-svg";
-
-// Weather type definition
+var SunCalc = require('suncalc');// Weather type definition
 type WeatherType = "fog" | "rain" | "storm" | "sunny" | "sunWithClouds";
 
 const getWeatherBackground = (weatherType: WeatherType) => {
@@ -109,16 +108,40 @@ export default function DestinationDetailsPage() {
   console.log(route);
   const { globalState, setGlobalState } = context;
 
-  var dest= globalState["tripDestinations"].find(a => a["location"].split(",")[0] == cityName)
-  if (!dest) {dest = globalState["tripDestinations"][0]}
-  const weatherT = dest["weather"]
+  var dest = globalState["tripDestinations"].find(
+    (a) => a["location"].split(",")[0] == cityName
+  );
+  if (!dest) {
+    dest = globalState["tripDestinations"][0];
+  }
+  const weatherT = dest["weather"];
+  // console.log(dest);
 
-  const feelsLike = 25
-  const actual  = 25
-  const visibility = 22
-  const sunset = 9
-  const rainData = weatherT.map((w) => w["precipitation"])
-  const tempData = weatherT.map((w) => w["temperature2m"])
+  function findClosestWeather(data: any[]) {
+    return data.reduce((closest, current) => {
+      const currentDiff = Math.abs(
+        new Date(current.time).getTime() - new Date().getTime()
+      );
+      const closestDiff = Math.abs(
+        new Date(closest.time).getTime() - new Date().getTime()
+      );
+      return currentDiff < closestDiff ? current : closest;
+    });
+  }
+
+  const closest = findClosestWeather(weatherT);
+  // console.log("Closest time match:", closest.time);
+console.log(closest)
+  const feelsLike = Math.round(closest["apparentTemperature"]);
+  const actual = Math.round(closest["temperature2m"]);
+  const visibility = (closest["visibility"]/1000).toFixed(1);
+  // const sunset = 9;
+
+  const sunsetTime = new Date(SunCalc.getTimes(new Date(dest.date), dest.latitude, dest.longitude).sunset)
+  
+  const sunset = (sunsetTime.getHours()-12).toString()+":"+sunsetTime.getMinutes().toString()+"pm";
+  const rainData = weatherT.map((w) => w["precipitation"]);
+  const tempData = weatherT.map((w) => w["temperature2m"]);
   const styles = StyleSheet.create({
     backgroundImage: {
       flex: 1,
@@ -350,7 +373,7 @@ export default function DestinationDetailsPage() {
                 </View>
                 <View style={styles.valContainer}>
                   <ThemedText type="default" style={{ color: "#000000" }}>
-                    {sunset}pm
+                    {sunset}
                   </ThemedText>
                 </View>
               </View>
