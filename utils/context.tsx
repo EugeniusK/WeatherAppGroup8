@@ -18,6 +18,13 @@ export interface TripDestination {
   weather: HourlyWeatherData[] // 24 hour weather data
 }
 
+
+export interface City {
+    id: number;
+    name: string;
+    date: string;
+    weather: string;
+}
 export interface Settings {
   units: 'celsius' | 'fahrenheit';
   contrast: 'normal' | 'high';
@@ -28,6 +35,7 @@ export interface Settings {
 export interface GlobalState {
   tripDestinations: TripDestination[];
   settings: Settings;
+  tripDestinationsHomePage: City[];
 }
 
 type AppContextType = {
@@ -45,7 +53,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       contrast: 'normal',
       textSize: 'medium',
       offlineAccess: false
-    }
+    },
+    tripDestinationsHomePage: []
   });
 
 
