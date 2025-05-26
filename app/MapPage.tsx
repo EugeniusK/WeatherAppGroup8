@@ -54,7 +54,6 @@ export default function MapPage() {
   const { globalState, setGlobalState } = context;
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
 
-
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync(Ionicons.font); // Makes sure the ionics font is loaded so icons load
@@ -79,6 +78,7 @@ export default function MapPage() {
             const startDate = new Date(place.date);
             const endDate = new Date(startDate);               // Get the weather data for 1 day
             endDate.setDate(startDate.getDate() + 1);
+            console.log(place.weather);
             const weatherData = await getHourlyWeatherForLocation(marker, startDate, endDate);
             // Count frequency of weather conditions
             const conditionCounts: Record<string, number> = {};
