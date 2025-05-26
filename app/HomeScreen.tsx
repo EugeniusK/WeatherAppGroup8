@@ -5,6 +5,8 @@ import React, { JSX, useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CityCard from '../components/CityCard';
 import WeatherMapToggle from '../components/WeatherMapToggle';
+import { useContext } from "react";
+import { AppContext } from "../utils/context";
 
 type RootStackParamList = {
   Home: {
@@ -47,6 +49,15 @@ interface City {
 
 //example data -- get from json data file 
 const HomeScreen = (): JSX.Element => {
+    // get global context
+    const context = useContext(AppContext);
+
+    if (!context) {
+      throw new Error("AppContext must be used within an AppProvider");
+    }
+
+    const { globalState, setGlobalState } = context;
+
     const [cities, setCities] = useState<City[]>([
       { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },
       { id: 2, name: 'Birmingham', date: '10 May', weather: 'sunny' },
