@@ -1,5 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { AppContext } from "@/utils/context";
+import { formatDate } from "@/utils/misc";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -104,8 +105,7 @@ export default function DestinationDetailsPage() {
   // TODO: This will come from API later
   const currentWeather: WeatherType = (weather as WeatherType) || "sunny";
 
-  const context = useContext(AppContext);
-  console.log(route);
+  const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
 
   var dest = globalState["tripDestinations"].find(
@@ -281,7 +281,7 @@ console.log(closest)
                 {cityName}
               </ThemedText>
               <ThemedText style={styles.dateText} type="default">
-                {date}
+                {formatDate(date)}
               </ThemedText>
             </View>
 

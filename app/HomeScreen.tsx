@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import CityCard from "../components/CityCard";
 import WeatherMapToggle from "../components/WeatherMapToggle";
-import { AppContext, City } from "../utils/context";
+import { AppContext, TripDestination } from "../utils/context";
 type RootStackParamList = {
   Home: {
     newCity?: {
@@ -47,7 +47,7 @@ type RouteProps = RouteProp<RootStackParamList, "Home">;
 // -want to get data from API
 
 //example data -- get from json data file
-const HomeScreen = (): JSX.Element => {
+export default function HomeScreen() {
   // get global context
   const context = useContext(AppContext);
 
@@ -56,10 +56,6 @@ const HomeScreen = (): JSX.Element => {
   }
 
   const { globalState, setGlobalState } = context;
-  console.log(globalState);
-  const [cities, setCities] = useState<City[]>(
-    globalState["tripDestinationsHomePage"]
-  );
 
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProps>();
@@ -67,7 +63,6 @@ const HomeScreen = (): JSX.Element => {
   // Animation values
   const checkmarkScale = useRef(new Animated.Value(1)).current;
   const carRotate = useRef(new Animated.Value(0)).current;
-  const [showTripStatus, setShowTripStatus] = useState(false);
 
   const animateCheckmark = () => {
     Animated.sequence([
@@ -100,44 +95,14 @@ const HomeScreen = (): JSX.Element => {
       }),
     ]).start();
   };
-
-  useEffect(() => {
-    if (route.params?.newCity) {
-      const { id, name, date, weather } = route.params.newCity;
-
-      if (id) {
-        // Update existing city
-        setCities((currentCities) =>
-          currentCities.map((city) =>
-            city.id === id ? { ...city, name, date, weather } : city
-          )
-        );
-
-        setGlobalState((prevState) => ({
-          ...prevState,
-          tripDestinationsHomePage: prevState.tripDestinationsHomePage.map(
-            (city) => (city.id === id ? { ...city, name, date, weather } : city)
-          ),
-        }));
-      } else {
-        // Add new city
-        console.log("add");
-        const newId = Math.max(...cities.map((c) => c.id), 0) + 1;
-        setCities((currentCities) => [
-          ...currentCities,
-          { id: newId, name, date, weather },
-        ]);
-        setGlobalState((prevState) => ({
-          ...prevState,
-          tripDestinationsHomePage: [
-            ...prevState.tripDestinationsHomePage,
-            { id: newId, name, date, weather },
-          ],
-        }));
-      }
-    }
-  }, [route.params?.newCity]);
-
+  // Get cities from global state
+  const cities = globalState.tripDestinations;
+  const setCities = (newCities: TripDestination[]) => {
+    setGlobalState({
+      ...globalState,
+      tripDestinations: newCities,
+    })
+  };
   const handleEditCity = (cityId: number) => {
     const cityToEdit = cities.find((c) => c.id === cityId);
     if (cityToEdit) {
@@ -145,9 +110,9 @@ const HomeScreen = (): JSX.Element => {
         editMode: true,
         cityId: cityId,
         initialCity: {
-          name: cityToEdit.name,
+          name: cityToEdit.location,
           date: cityToEdit.date,
-          weather: cityToEdit.weather,
+          weather: cityToEdit.weather[0].weatherCode.description,
         },
       });
     }
@@ -195,9 +160,6 @@ const HomeScreen = (): JSX.Element => {
           >
             <Ionicons name="settings" size={24} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.circleButton}>
-            <Ionicons name="pencil" size={24} color="white" />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -221,38 +183,17 @@ const HomeScreen = (): JSX.Element => {
           {cities
             .slice()
             .sort((a, b) => {
-              const dateA = new Date(a.date.replace(" ", " 2024 "));
-              const dateB = new Date(b.date.replace(" ", " 2024 "));
+              const dateA = new Date(a.date);
+              const dateB = new Date(b.date);
               return dateA.getTime() - dateB.getTime();
             })
             .map((city) => (
               <CityCard
                 key={city.id}
-                cityName={city.name}
+                cityName={city.location}
                 date={city.date}
-                weather={city.weather}
-                onDelete={() => {
-                  setCities((prevCities) => {
-                    const updatedCities = prevCities.filter(
-                      (c) => c.id !== city.id
-                    );
-                    console.log(
-                      "Deleting city:",
-                      city.id,
-                      "Updated cities:",
-                      updatedCities
-                    );
-                    return updatedCities;
-                  });
-
-                  setGlobalState((prevState) => ({
-                    ...prevState,
-                    tripDestinationsHomePage:
-                      prevState.tripDestinationsHomePage.filter(
-                        (c) => c.id !== city.id
-                      ),
-                  }));
-                }}
+                weather={city.weather[0].weatherCode.description}
+                onDelete={() => setCities(cities.filter((c) => c.id !== city.id))}
                 onEdit={() => handleEditCity(city.id)}
               />
             ))}
@@ -317,7 +258,7 @@ const styles = StyleSheet.create({
   editButtons: {
     position: "absolute",
     right: 10,
-    top: 20, // Changed from -20 to move buttons down
+    top: 24, // Changed from -20 to move buttons down
     flexDirection: "row",
   },
   circleButton: {
@@ -394,5 +335,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-export default HomeScreen;

@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useRef, useState } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { GestureHandlerRootView, PanGestureHandler, PanGestureHandlerGestureEvent, State } from 'react-native-gesture-handler';
+import { formatDate } from '@/utils/misc';
 
 type RootStackParamList = {
   Home: undefined;
@@ -170,7 +171,7 @@ const CityCard: React.FC<CityCardProps> = ({ cityName, date, weather, onDelete, 
                 <Text style={styles.cityName}>{cityName}</Text>
               </View>
               <View style={styles.dateContainer}>
-                <Text style={styles.dateText}>{date}</Text>
+                <Text style={styles.dateText}>{formatDate(date)}</Text>
               </View>
             </TouchableOpacity>
           </Animated.View>

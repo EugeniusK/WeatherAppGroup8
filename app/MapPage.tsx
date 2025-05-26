@@ -13,11 +13,8 @@ interface WeatherMarker extends LocationResult {
   iconName: string;
 }
 
-
 export default function MapPage() {
-  const [markers, setMarkers] = useState<WeatherMarker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(true);
 
   const conditionIconMap: Record<string, string> = {
   "Cloudy": "cloudy",
@@ -52,7 +49,6 @@ export default function MapPage() {
   }
   const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
-  const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
 
   useEffect(() => {
     async function loadFonts() {
@@ -62,58 +58,40 @@ export default function MapPage() {
     loadFonts();
   }, []);
 
+  if (!fontsLoaded) {
+    return <View style={styles.container}><Text>Loading map and icons...</Text></View>;
+  }
 
-  useEffect(() => {
-    if (!fontsLoaded) return;
+  const markers: WeatherMarker[] = []; // collect markers here
+  for (const place of globalState.tripDestinations) {
+    const marker = {
+      lat: place.lat,
+      lon: place.lon,
+      display_name: place.location,
+      type: "city",
+    }
+    const weatherData = place.weather;
+    // Count frequency of weather conditions
+    const conditionCounts: Record<string, number> = {};
+    for (const hourly of weatherData) {
+      const desc = hourly.weatherCode.description;
+      conditionCounts[desc] = (conditionCounts[desc] || 0) + 1;
+    }
 
-    const fetchMarkers = async () => {
-      setLoading(true);
-      try {
-        const newMarkers: WeatherMarker[] = []; // collect markers here
-        for (const place of globalState.tripDestinations) {
-          const locationData = await searchLocation(place.location); // Iterate through all locations and get relevant data (long, lat etc.)
-          if (locationData.length > 0) {
-
-            const marker = locationData[0];
-            const startDate = new Date(place.date);
-            const endDate = new Date(startDate);               // Get the weather data for 1 day
-            endDate.setDate(startDate.getDate() + 1);
-            const weatherData = await getHourlyWeatherForLocation(marker, startDate, endDate);
-            // Count frequency of weather conditions
-            const conditionCounts: Record<string, number> = {};
-            for (const hourly of weatherData) {
-              const desc = hourly.weatherCode.description;
-              conditionCounts[desc] = (conditionCounts[desc] || 0) + 1;
-            }
-
-            // Gets the weather condition which occurs the most
-            let maxKey = "";
-            let maxValue = -Infinity;
-            for (const [key, value] of Object.entries(conditionCounts)) {
-              if (value > maxValue) {
-                maxValue = value;
-                maxKey = key;
-              }
-            }
-            const iconName = conditionIconMap[maxKey];;
-            newMarkers.push({
-            ...marker,
-            iconName,
-          });
+    // Gets the weather condition which occurs the most
+    let maxKey = "";
+    let maxValue = -Infinity;
+    for (const [key, value] of Object.entries(conditionCounts)) {
+      if (value > maxValue) {
+        maxValue = value;
+        maxKey = key;
       }
     }
-      setMarkers(newMarkers);
-      setLoading(false); // Ensure that markers will be placed
-      } catch (error) {
-        console.error("Failed to fetch preset locations", error);
-      } 
-    };
-
-    fetchMarkers();
-  }, [globalState,fontsLoaded]); // When locations is updated, code is reran so markers can be updated
-
-  if (loading) {
-  return <View style={styles.container}><Text>Loading map and icons...</Text></View>;
+    const iconName = conditionIconMap[maxKey];;
+      markers.push({
+      ...marker,
+      iconName,
+    });
   }
  
   return (

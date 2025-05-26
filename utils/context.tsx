@@ -13,20 +13,16 @@ export default function ANYPage() {
 import React, { createContext, useState } from 'react';
 import { HourlyWeatherData } from './weather';
 export interface TripDestination {
+  id: number;
   location: string;
+  lon: string;
+  lat: string;
   date: string; // yyyy-mm-dd
   latitude: number;
   longitude: number;
   weather: HourlyWeatherData[] // 24 hour weather data
 }
 
-
-export interface City {
-    id: number;
-    name: string;
-    date: string;
-    weather: string;
-}
 export interface Settings {
   units: 'celsius' | 'fahrenheit';
   contrast: 'normal' | 'high';
@@ -37,7 +33,6 @@ export interface Settings {
 export interface GlobalState {
   tripDestinations: TripDestination[];
   settings: Settings;
-  tripDestinationsHomePage: City[];
 }
 
 type AppContextType = {
@@ -56,7 +51,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       textSize: 'medium',
       offlineAccess: false
     },
-    tripDestinationsHomePage: []
   });
 
 

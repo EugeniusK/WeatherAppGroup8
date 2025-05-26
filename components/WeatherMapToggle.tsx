@@ -1,15 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
-type RootStackParamList = {
+type TabParamList = {
   Home: undefined;
   Map: undefined;
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+type NavigationProp = BottomTabNavigationProp<TabParamList>;
 
 interface WeatherMapToggleProps {
   currentPage: 'Home' | 'Map';

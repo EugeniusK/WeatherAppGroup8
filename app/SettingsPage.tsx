@@ -52,7 +52,7 @@ export default function SettingsPage() {
       color: "red",
     },
     backButton: {
-      backgroundColor: "rgba(51, 102, 255, 0.3)",
+      backgroundColor: "rgb(51, 102, 255)",
       width: 50,
       height: 50,
       borderRadius: 25,

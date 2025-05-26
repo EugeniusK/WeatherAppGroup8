@@ -7,6 +7,7 @@ import { Calendar } from "react-native-calendars";
 import { AppContext, TripDestination } from "../utils/context";
 import { searchLocation } from "../utils/geolocation";
 import { getHourlyWeatherForLocation } from "../utils/weather";
+import { formatDate } from "@/utils/misc";
 
 type RootStackParamList = {
   Home: {
@@ -31,14 +32,6 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 type RouteProps = RouteProp<RootStackParamList, 'Search'>;
 
 let debounceTimer: ReturnType<typeof setTimeout>;
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const month = monthNames[date.getMonth()];
-  return `${day} ${month}`;
-};
 
 const extractCityName = (fullLocation: string): string => {
   return fullLocation.split(',')[0].trim();
@@ -87,13 +80,14 @@ export default function SearchPage() {
 
   const handleConfirm = async () => {
     if (selectedLocation && selectedDate) {
-      console.log("waiting");
       const selectedLocationExact = await searchLocation(selectedLocation)
       const weather = await getHourlyWeatherForLocation(selectedLocationExact[0], new Date(selectedDate), new Date(selectedDate));
-      console.log("waiting done");
 
       const newTrip: TripDestination = {
-        location: selectedLocation,
+        id: Math.random(),
+        location: extractCityName(selectedLocation),
+        lon: selectedLocationExact[0].lon,
+        lat: selectedLocationExact[0].lat,
         date: selectedDate,
         weather: weather,
         latitude: parseFloat(selectedLocationExact[0].lat),
@@ -101,30 +95,23 @@ export default function SearchPage() {
 
       };
 
-      setGlobalState(prevState => ({
-        ...prevState,
-        tripDestinations: [...prevState.tripDestinations, newTrip],
-      }));
-      const cityData = {
-        name: extractCityName(selectedLocation),
-        date: formatDate(selectedDate),
-        weather: 'sunny',
-      };
-
       if (isEditMode && route.params?.cityId) {
-        // Update existing city
-        navigation.navigate('Home', {
-          newCity: {
-            ...cityData,
-            id: route.params.cityId
-          }
+        setGlobalState(prevState => {
+          const updatedDestinations = prevState.tripDestinations.filter(dest => dest.id !== route.params.cityId);
+          updatedDestinations.push(newTrip);
+          return {
+            ...prevState,
+            tripDestinations: updatedDestinations,
+          };
         });
       } else {
         // Add new city
-        navigation.navigate('Home', {
-          newCity: cityData
-        });
+        setGlobalState(prevState => ({
+          ...prevState,
+          tripDestinations: [...prevState.tripDestinations, newTrip],
+        }));
       }
+      navigation.pop();
     } else {
       alert("Please select both a location and a date.");
     }
