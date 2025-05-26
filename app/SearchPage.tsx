@@ -1,14 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Calendar } from "react-native-calendars";
+import { AppContext, TripDestination } from "../utils/context";
 import { searchLocation } from "../utils/geolocation";
-import { useContext } from "react";
-import { AppContext } from "../utils/context";
 import { getHourlyWeatherForLocation } from "../utils/weather";
-
 
 type RootStackParamList = {
   Home: {
@@ -87,11 +85,11 @@ export default function SearchPage() {
     }, 500);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedLocation && selectedDate) {
-
       console.log("waiting");
-      const weather = getHourlyWeatherForLocation(selectedLocation, new Date(selectedDate), new Date(selectedDate));
+      const selectedLocationExact = await searchLocation(selectedLocation)
+      const weather = await getHourlyWeatherForLocation(selectedLocationExact[0], new Date(selectedDate), new Date(selectedDate));
       console.log("waiting done");
 
       const newTrip: TripDestination = {
@@ -104,7 +102,6 @@ export default function SearchPage() {
         ...prevState,
         tripDestinations: [...prevState.tripDestinations, newTrip],
       }));
-
       const cityData = {
         name: extractCityName(selectedLocation),
         date: formatDate(selectedDate),

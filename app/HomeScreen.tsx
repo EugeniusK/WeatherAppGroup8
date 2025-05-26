@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { JSX, useEffect, useRef, useState } from 'react';
+import React, { JSX, useContext, useEffect, useRef, useState } from 'react';
 import { Animated, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CityCard from '../components/CityCard';
 import WeatherMapToggle from '../components/WeatherMapToggle';
-import { useContext } from "react";
 import { AppContext } from "../utils/context";
 
 type RootStackParamList = {
@@ -59,9 +58,9 @@ const HomeScreen = (): JSX.Element => {
     const { globalState, setGlobalState } = context;
 
     const [cities, setCities] = useState<City[]>([
-      { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },
-      { id: 2, name: 'Birmingham', date: '10 May', weather: 'sunny' },
-      { id: 3, name: 'Edinburgh', date: '15 May', weather: 'sunny' },
+      // { id: 1, name: 'Cambridge', date: '9 May', weather: 'sunny' },
+      // { id: 2, name: 'Birmingham', date: '10 May', weather: 'sunny' },
+      // { id: 3, name: 'Edinburgh', date: '15 May', weather: 'sunny' },
     ]);
 
     const navigation = useNavigation<NavigationProp>();
