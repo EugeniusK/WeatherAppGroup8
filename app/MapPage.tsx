@@ -52,7 +52,9 @@ export default function MapPage() {
   }
   const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
+  console.log(globalState);
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
+
 
   useEffect(() => {
     async function loadFonts() {
@@ -111,7 +113,7 @@ export default function MapPage() {
     };
 
     fetchMarkers();
-  }, [locations,fontsLoaded]); // When locations is updated, code is reran so markers can be updated
+  }, [globalState,fontsLoaded]); // When locations is updated, code is reran so markers can be updated
 
   if (loading) {
   return <View style={styles.container}><Text>Loading map and icons...</Text></View>;

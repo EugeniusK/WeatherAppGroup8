@@ -41,18 +41,7 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [globalState, setGlobalState] = useState<GlobalState>({
-    tripDestinations: [
-      {
-        location: "Cambridge",
-        date: new Date().toISOString().split('T')[0], // Today's date
-        weather: []
-      },
-      {
-        location: "London",
-        date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
-        weather: []
-      },
-    ],
+    tripDestinations: [],
     settings: {
       units: 'celsius',
       contrast: 'normal',
