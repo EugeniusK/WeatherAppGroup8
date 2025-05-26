@@ -52,9 +52,7 @@ export default function MapPage() {
   }
   const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
-  console.log(globalState);
   const [locations, setLocations] = useState(["London", "Brighton", "Cambridge"]); // These are pre set locations, can be changed once the search is implemented
-
 
   useEffect(() => {
     async function loadFonts() {
@@ -80,7 +78,6 @@ export default function MapPage() {
             const startDate = new Date(place.date);
             const endDate = new Date(startDate);               // Get the weather data for 1 day
             endDate.setDate(startDate.getDate() + 1);
-            console.log(place.weather);
             const weatherData = await getHourlyWeatherForLocation(marker, startDate, endDate);
             // Count frequency of weather conditions
             const conditionCounts: Record<string, number> = {};

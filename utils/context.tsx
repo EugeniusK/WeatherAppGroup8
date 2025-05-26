@@ -12,7 +12,6 @@ export default function ANYPage() {
 
 import React, { createContext, useEffect, useState } from 'react';
 import { searchLocation } from './geolocation';
-import { getHourlyWeatherForLocation } from './weather';
 
 export interface TripDestination {
   location: string;
@@ -56,7 +55,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const location = await searchLocation('Cambridge')[0];
       const date = new Date();
       const weather = await getHourlyWeatherForLocation(location, date, date);
-      
+
       setGlobalState({
         ...globalState,
         tripDestinations: [
@@ -66,7 +65,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             weather: weather
           }
         ]
-      })
+      });
     })();
   })
 
