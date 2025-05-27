@@ -6,11 +6,13 @@ const styles = StyleSheet.create({
   activeButton: { backgroundColor: "#012" },
   activeText: { color: Colors.dark.text },
   settingContainer: {
-    padding: 16,
+    paddingHorizontal: 4,
+    paddingVertical: 16,
+
     flexDirection: "row",
   },
   textContainer: {
-    flex: 0.75,
+    flex: 0.5,
     paddingHorizontal: 16,
     paddingVertical: 8,
     // backgroundColor: "#EEE",
@@ -44,6 +46,7 @@ const styles = StyleSheet.create({
   toggleButtonText: {
     textAlign: "center",
     color: "000",
+    fontSize: 12
   },
 });
 interface ToggleSwitchProps {
