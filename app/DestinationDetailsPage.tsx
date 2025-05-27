@@ -193,8 +193,12 @@ export default function DestinationDetailsPage() {
   // const sunset = 9;
 
   const sunsetTime = new Date(SunCalc.getTimes(new Date(dest.date), dest.latitude, dest.longitude).sunset)
-  
-  const sunset = (sunsetTime.getHours()-12).toString()+":"+sunsetTime.getMinutes().toString()+"pm";
+  var sunset = (sunsetTime.getHours()-12).toString()+":"+sunsetTime.getMinutes().toString()+"pm";
+
+  if (sunsetTime.getMinutes() < 10) {
+  var sunset = (sunsetTime.getHours()-12).toString()+":0"+sunsetTime.getMinutes().toString()+"pm";
+
+  } 
   const rainData = weatherT.map((w) => w["precipitation"]);
   const tempData = weatherT.map((w) => w["temperature2m"]);
   const styles = StyleSheet.create({
