@@ -58,7 +58,7 @@ export default function MapPage() {
   }, []);
 
   if (!fontsLoaded) {
-    return <View style={styles.container}><Text>Loading map and icons...</Text></View>;
+    return <View style={styles.loadingContainer}><Text style={styles.loadingText}>Loading map and icons...</Text></View>;
   }
 
   const markers: WeatherMarker[] = []; // collect markers here
@@ -92,8 +92,6 @@ export default function MapPage() {
       iconName,
     });
   }
-
-  console.log(markers);
  
   return (
     <View style={styles.container}>
@@ -175,5 +173,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    },
+  loadingText: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
