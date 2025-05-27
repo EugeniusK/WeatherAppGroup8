@@ -16,16 +16,75 @@ import { AbstractChartConfig } from "react-native-chart-kit/dist/AbstractChart";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient, Path, Stop } from "react-native-svg";
 var SunCalc = require('suncalc');// Weather type definition
-type WeatherType = "fog" | "rain" | "storm" | "sunny" | "sunWithClouds";
+type WeatherType = 
+  | "sunny" 
+  | "cloudy" 
+  | "partlyCloudy" 
+  | "fog" 
+  | "rain" 
+  | "storm" 
+  | "snow";
 
-const getWeatherBackground = (weatherType: WeatherType) => {
+const getWeatherBackground = (description: string) => {
+  // Map weather descriptions to our background image types
+  const weatherMapping: { [key: string]: WeatherType } = {
+    // Clear conditions
+    "Sunny": "sunny",
+    "Clear": "sunny",
+    "Mainly Sunny": "sunny",
+    "Mainly Clear": "sunny",
+    
+    // Cloudy conditions
+    "Cloudy": "cloudy",
+    
+    // Partly cloudy conditions
+    "Partly Cloudy": "partlyCloudy",
+    
+    // Foggy conditions
+    "Foggy": "fog",
+    "Rime Fog": "fog",
+    
+    // Rainy conditions
+    "Light Drizzle": "rain",
+    "Drizzle": "rain",
+    "Heavy Drizzle": "rain",
+    "Light Freezing Drizzle": "rain",
+    "Freezing Drizzle": "rain",
+    "Light Rain": "rain",
+    "Rain": "rain",
+    "Heavy Rain": "rain",
+    "Light Freezing Rain": "rain",
+    "Freezing Rain": "rain",
+    "Light Showers": "rain",
+    "Showers": "rain",
+    "Heavy Showers": "rain",
+    
+    // Stormy conditions
+    "Thunderstorm": "storm",
+    "Light Thunderstorms With Hail": "storm",
+    "Thunderstorm With Hail": "storm",
+    
+    // Snowy conditions
+    "Light Snow": "snow",
+    "Snow": "snow",
+    "Heavy Snow": "snow",
+    "Snow Grains": "snow",
+    "Light Snow Showers": "snow",
+    "Snow Showers": "snow"
+  };
+
   const backgrounds = {
+    sunny: require("../assets/images/sunny.png"),
+    cloudy: require("../assets/images/sun with clouds.png"),
+    partlyCloudy: require("../assets/images/sun with clouds.png"),
     fog: require("../assets/images/fog.png"),
     rain: require("../assets/images/rain.png"),
     storm: require("../assets/images/storm.png"),
-    sunny: require("../assets/images/sunny.png"),
-    sunWithClouds: require("../assets/images/sun with clouds.png"),
+    snow: require("../assets/images/rain.png") // Using rain image for snow since we don't have a snow image
   };
+
+  // Get the weather type from the mapping, default to sunny if not found
+  const weatherType = weatherMapping[description] || "sunny";
   return backgrounds[weatherType];
 };
 
@@ -102,9 +161,6 @@ export default function DestinationDetailsPage() {
   const route = useRoute<RouteProps>();
   const { cityName, date, weather } = route.params;
 
-  // TODO: This will come from API later
-  const currentWeather: WeatherType = (weather as WeatherType) || "sunny";
-
   const context = useContext(AppContext)!;
   const { globalState, setGlobalState } = context;
 
@@ -115,8 +171,7 @@ export default function DestinationDetailsPage() {
     dest = globalState["tripDestinations"][0];
   }
   const weatherT = dest["weather"];
-  // console.log(dest);
-
+  
   function findClosestWeather(data: any[]) {
     return data.reduce((closest, current) => {
       const currentDiff = Math.abs(
@@ -130,8 +185,8 @@ export default function DestinationDetailsPage() {
   }
 
   const closest = findClosestWeather(weatherT);
-  // console.log("Closest time match:", closest.time);
-console.log(closest)
+  const currentWeather = closest.weatherCode.description;
+
   const feelsLike = Math.round(closest["apparentTemperature"]);
   const actual = Math.round(closest["temperature2m"]);
   const visibility = (closest["visibility"]/1000).toFixed(1);
