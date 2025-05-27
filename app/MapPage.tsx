@@ -1,4 +1,3 @@
-import { getHourlyWeatherForLocation } from '@/utils/weather';
 import { Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';
 import React, { useContext, useEffect, useState } from "react";
@@ -6,7 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import WeatherMapToggle from '../components/WeatherMapToggle';
 import { AppContext } from '../utils/context';
-import { LocationResult, searchLocation } from "../utils/geolocation";
+import { LocationResult } from "../utils/geolocation";
 
 
 interface WeatherMarker extends LocationResult {
@@ -93,6 +92,8 @@ export default function MapPage() {
       iconName,
     });
   }
+
+  console.log(markers);
  
   return (
     <View style={styles.container}>
